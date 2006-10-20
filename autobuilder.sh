@@ -1,13 +1,13 @@
 #!/bin/bash
 
 DATE=$(date "+%Y%m%d")
-LOG="log/log.$DATE"
-RESULT="result/result.$DATE"
-BUILDDIR=build.tmp
 
-while [ -e "$LOG" -o -e "$RESULT" ]; do
-	LOG="${LOG}.1"
-	RESULT="${RESULT}.1"
+n=0
+while [ $n = 0 -o -e "$LOG" -o -e "$RESULT" ]; do
+	n=$(($n + 1))
+	LOG="out/log/log.$DATE.$n"
+	RESULT="out/result/result.$DATE.$n"
+	BUILDDIR=build.tmp
 done
 
 
@@ -25,6 +25,7 @@ result()
 
 run()
 {
+	log "Starting at: $(date)"
 	log "Log file is: '$LOG'"
 	log "Result file is: '$RESULT'"
 
@@ -73,6 +74,8 @@ run()
 			echo "End of log listing."
 		)
 	done
+	
+	log "Done at: $(date)"
 }
 
 run >>"$LOG" 30>>"$RESULT"
