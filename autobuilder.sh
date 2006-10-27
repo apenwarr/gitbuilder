@@ -53,6 +53,7 @@ run()
 		
 		(
 			cd "$DIR"
+			export PATH="$PATH:`pwd`/output"
 			errfile="$(basename "$BASE" .bpg).err"
 			if [ -r "$BASE" ]; then
 				delphi32.exe /b "$BASE"
