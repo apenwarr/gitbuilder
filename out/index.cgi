@@ -2,10 +2,17 @@
 use strict;
 use CGI qw/:standard *table start_ul/;
 
-print header, start_html("Autobuilder results"), h1("Autobuilder results");
+print header, start_html("Autobuilder results");
+
+print Link({-rel=>"alternate", -title=>"Autobuilder results",
+	-href=>"rss.cgi", -type=>"application/rss+xml"});
+
+print h1("Autobuilder results");
 
 print start_table();
 print Tr(th("Run"), th("Project"), th("Result"), th("Details"));
+
+my $rows = 0;
 
 for my $filename (sort { $b cmp $a } <result/result.*>) {
 	next if $filename =~ /~$/;
@@ -30,6 +37,7 @@ for my $filename (sort { $b cmp $a } <result/result.*>) {
 			    $code==0 ? "ok" : b("FAIL")),
 			 td($codestr . " " . a({-href=>$logname}, "(Log)")));
 		$did_one = 1;
+		$rows++;
 	}
 	close $fh;
 	
@@ -39,5 +47,8 @@ for my $filename (sort { $b cmp $a } <result/result.*>) {
 			 td({bgcolor=>"#ffff00"}, b("FAIL")),
 			 td("Missing - no result codes generated?!"
 			 	 . " " . a({-href=>$logname}, "(Log)")));
+		$rows++;
 	}
+	
+	last if $rows > 100;
 }
