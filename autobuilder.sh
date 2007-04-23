@@ -2,6 +2,8 @@
 
 DATE=$(date "+%Y%m%d")
 
+mkdir -p c:/temp
+
 n=0
 while [ $n = 0 -o -e "$LOG" -o -e "$RESULT" ]; do
 	n=$(($n + 1))
@@ -45,34 +47,28 @@ run()
 	
 	log "Looking for projects..."
 	cd "$BUILDDIR"
-	for proj in */*.bpg; do
+	for proj in */buildme; do
 		DIR="$(dirname "$proj")"
 		BASE="$(basename "$proj")"
 		
-		log "Building project '$BASE' in '$DIR'"
+		log "Building using '$BASE' in '$DIR'"
 		
 		(
 			cd "$DIR"
 			export PATH="$PATH:`pwd`/output"
-			errfile="$(basename "$BASE" .bpg).err"
 			if [ -r "$BASE" ]; then
-				delphi32.exe /b "$BASE"
+				PATH=.:$PATH "$BASE"
 				code=$?
 				log "Error code was $code."
 				if [ "$code" = 0 ]; then
 					codestr="ok"
 				else
-					codestr=$(tail -1 "$errfile")
+					codestr="Error during build!"
 				fi
-				result "$code $proj  $codestr"
+				result "$code $DIR  $codestr"
 			fi
 			
 			echo
-			echo "Log listing:"
-			echo
-			cat "$errfile"
-			echo
-			echo "End of log listing."
 		)
 	done
 	
