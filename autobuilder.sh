@@ -3,13 +3,14 @@
 DATE=$(date "+%Y%m%d")
 
 mkdir -p c:/temp
+rm -f c:/temp/copylist.exe
 
 n=0
 while [ $n = 0 -o -e "$LOG" -o -e "$RESULT" ]; do
 	n=$(($n + 1))
 	LOG="out/log/log.$DATE.$n"
 	RESULT="out/result/result.$DATE.$n"
-	BUILDDIR=build.tmp
+	BUILDDIR=tmp
 done
 
 
