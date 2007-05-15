@@ -4,6 +4,9 @@ use CGI qw/:standard/;
 use File::stat;
 use POSIX qw(strftime);
 
+use lib ".";
+use Autobuilder;
+
 my $url = url();
 my $relative = url(-relative=>1);
 $url =~ s{/$relative$}{};
@@ -28,6 +31,9 @@ for my $filename (sort { $b cmp $a } <result/result.*>) {
 	my $logname = $filename;
 	$logname =~ s{^result/result}{log/log};
 	
+	my $logcgi = $logname;
+	$logcgi =~ s{^log/log\.}{log.cgi?date=};
+	
 	my $runname = $filename;
 	$runname =~ s{^result/result.(....)(..)(..)}{$1/$2/$3};
 	
@@ -37,18 +43,23 @@ for my $filename (sort { $b cmp $a } <result/result.*>) {
 
 	open my $fh, "<$filename"
 		or die("open $filename: $!\n");
+
+	my $longstr = find_errors($logname);
 		
 	my $did_one = 0;
 	while (<$fh>) {
 		chomp;
 		my ($code, $proj, $codestr) = split(/\s+/, $_, 3);
+		if ($longstr && $code == 0) {
+			$codestr = "Warnings found!";
+		}
 		print qq{
 		  <item>
 			<title>$proj: $codestr</title>
 			<pubDate>$date</pubDate>
-			<link>$url/$logname</link>
-			<guid isPermaLink='true'>$url/$logname</guid>
-			<description>$codestr</description>
+			<link>$url/$logcgi</link>
+			<guid isPermaLink='true'>$url/$logcgi</guid>
+			<description>$codestr\n\n$longstr</description>
 		  </item>
 		};
 		$did_one = 1;
@@ -62,9 +73,9 @@ for my $filename (sort { $b cmp $a } <result/result.*>) {
 		  <item>
 			<title>NONE: $codestr</title>
 			<pubDate>$date</pubDate>
-			<link>$url/$logname</link>
-			<guid isPermaLink='true'>$url/$logname</guid>
-			<description>$codestr</description>
+			<link>$url/$logcgi</link>
+			<guid isPermaLink='true'>$url/$logcgi</guid>
+			<description>$codestr\n\n$longstr</description>
 		  </item>
 		};
 		$rows++;

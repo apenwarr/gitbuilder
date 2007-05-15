@@ -1,0 +1,32 @@
+body {
+	font-family: "Andale Mono", "Courier New", monospace;
+}
+
+.debug, .warning, .error, .fatal {
+	white-space: nowrap;
+}
+
+.warning ul, .error ul, .fatal ul {
+	white-space: normal;
+	font-weight: bold;
+}
+
+.warning {
+	background: #ffff88;
+}
+
+.error, .fatal {
+	background: #ff8888;
+}
+
+.buildscript {
+	color: green;
+	font-weight: bold;
+}
+
+div.msbuild {
+	white-space: nowrap;
+	/* font-style: italic; */
+	font-weight: bold;
+}
+

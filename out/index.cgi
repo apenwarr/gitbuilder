@@ -2,6 +2,9 @@
 use strict;
 use CGI qw/:standard *table start_ul/;
 
+use lib ".";
+use Autobuilder;
+
 print header, start_html("Autobuilder results");
 
 print Link({-rel=>"alternate", -title=>"Autobuilder results",
@@ -20,22 +23,30 @@ for my $filename (sort { $b cmp $a } <result/result.*>) {
 	my $logname = $filename;
 	$logname =~ s{^result/result}{log/log};
 	
+	my $logcgi = $logname;
+	$logcgi =~ s{^log/log\.}{log.cgi?date=};
+	
 	my $runname = $filename;
 	$runname =~ s{^result/result.(....)(..)(..)}{$1/$2/$3};
 
 	open my $fh, "<$filename"
 		or die("open $filename: $!\n");
 		
+	my $longstr = find_errors($logname);
+
 	my $did_one = 0;
 	while (<$fh>) {
 		chomp;
 		my ($code, $proj, $codestr) = split(/\s+/, $_, 3);
+		if ($longstr && $code == 0) {
+			$codestr = "Warnings found!";
+		}
 		# print "$code--$proj--$codestr\n", br;
 		print Tr(td($runname),
 			 td($proj),
 			 td({bgcolor=>($code==0 ? "#66ff66" : "#ff6666")},
 			    $code==0 ? "ok" : b("FAIL")),
-			 td($codestr . " " . a({-href=>$logname}, "(Log)")));
+			 td($codestr . " " . a({-href=>$logcgi}, "(Log)")));
 		$did_one = 1;
 		$rows++;
 	}
