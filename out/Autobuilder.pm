@@ -14,7 +14,7 @@ sub find_errors($)
 	open my $fh, "<$filename"
 		or die("Can't open $filename: $!\n");
 	while (defined(my $s = <$fh>)) {
-		if ($s =~ /\s(hint|warning|error|fatal)\s*: (.*)/i) {
+		if ($s =~ /\s(hint|warning|error|fatal)\s*:\s*(.*)/i) {
 			$out .= "<p>$1: $2</p>\n";
 		}
 	}

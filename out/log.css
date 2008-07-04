@@ -11,7 +11,7 @@ body {
 	font-weight: bold;
 }
 
-.warning {
+.hint, .warning {
 	background: #ffff88;
 }
 

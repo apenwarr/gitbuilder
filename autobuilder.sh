@@ -56,7 +56,7 @@ for branch in $branches; do
 	echo "$branch ($nicebranch) -> $ref"
 
 	if [ ! -e "out/pass/$ref" -a ! -e "out/fail/$ref" ]; then
-		run $ref | perl -pe 's/[\r\n]//g; $_ .= "\n";' | tee log.out
+		run $ref | perl -pe 's/\r/\n/g; s/\n+/\n/g;' | uniq | tee log.out
 		CODE=$?
 		if [ "$CODE" = 0 ]; then
 			echo PASS

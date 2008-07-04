@@ -66,9 +66,9 @@ while (defined(my $s = <$fh>))
     	print start_ul;
     	$in = 1;
     	next;
-    } elsif ($s =~ /(warning|error|fatal)\s*: ([^:]+): (.*)/i) {
-    	$class = $1;
-    	$s = "$2:" . ul($3);
+    } elsif ($s =~ /(hint|warning|error|fatal)\s*:\s*(.*)/i) {
+    	$class = lc $1;
+    	$s = ul("$1: $2");
     }
     
     print div({-class=>$class}, $s);
