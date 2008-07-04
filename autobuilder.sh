@@ -21,7 +21,7 @@ _run()
 	git reset --hard HEAD || return 20
 	
 	log "Cleaning..."
-	git clean -n -x -d || return 30
+	git clean -f -x -d || return 30
 	
 	log "Building..."
 	make 2>&1 || return 40
@@ -69,7 +69,7 @@ for branch in $branches; do
 		echo $ref >out/refs/$nicebranch
 		
 		# only do one build per script invocation
-		#exit $CODE
+		# exit $CODE
 	else
 		echo $ref >out/refs/$nicebranch
 	fi
