@@ -1,4 +1,4 @@
-#!c:\cygwin\bin\perl -w
+#!/usr/bin/perl -w
 use strict;
 use CGI::Pretty qw/:standard *table start_ul end_ul start_li end_li/;
 
