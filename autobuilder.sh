@@ -11,17 +11,20 @@ log()
 _run()
 {
 	log "Starting at: $(date)"
+	
+	cd build || return 10
+	
 
 	log "Updating git..."
-	cd src && 
 	git fetch origin &&
-	git checkout origin/master || return 1
-
+	git checkout "$BRANCH" &&
+	git reset --hard HEAD || return 20
+	
 	log "Cleaning..."
-	git clean -n -x -d || return 2
+	git clean -n -x -d || return 30
 	
 	log "Building..."
-	make 2>&1 || return 3
+	make 2>&1 || return 40
 	
 	log "Done at: $(date)"
 	return 0
@@ -35,15 +38,41 @@ run()
 	return $CODE
 }
 
-run >log.out
-CODE=$?
-mkdir -p out/pass out/fail
-if [ "$CODE" = 0 ]; then
-	echo PASS
-	mv -v log.out out/pass/log-$DATE.txt
+getref()
+{
+	(cd build && git-rev-list --no-walk "$1")
+}
+
+mkdir -p out/pass out/fail out/refs
+
+if [ -n "$*" ]; then
+	branches="$*"
 else
-	echo FAIL
-	mv -v log.out out/fail/log-$DATE.txt
+	branches=$( (cd build && git-branch -r) )
 fi
+for branch in $branches; do
+	nicebranch=$(echo $branch | sed -e 's,.*/,,' -e 's/[^A-Za-z0-9]/_/g')
+	ref=$(getref $branch)
+	echo "$branch ($nicebranch) -> $ref"
+
+	if [ ! -e "out/pass/$ref" -a ! -e "out/fail/$ref" ]; then
+		run $ref >log.out
+		CODE=$?
+		if [ "$CODE" = 0 ]; then
+			echo PASS
+			mv -v log.out out/pass/$ref
+		else
+			echo FAIL
+			mv -v log.out out/fail/$ref
+		fi
+		
+		echo $ref >out/refs/$nicebranch
+		
+		# only do one build per script invocation
+		break;
+	else
+		echo $ref >out/refs/$nicebranch
+	fi
+done
 
 exit 0
