@@ -2,20 +2,30 @@
 use strict;
 use CGI::Pretty qw/:standard *table start_ul end_ul start_li end_li/;
 
-my $date = param('date');
-$date =~ s/[^0-9\.]/_/g;
-$date =~ s/^\./_/;
+my $commit = param('log');
+$commit =~ s/[^0-9A-Za-z]/_/g;
+$commit =~ s/^\./_/;
 
 print header, start_html(
-	-title => "$date Autobuilder log",
+	-title => "$commit - Autobuilder log",
 	-style => {-src => "log.css"}
 );
 
 print div({-style=>'float: right'}, a({-href=>"."}, "<< index"));
-print h1("Autobuilder log for $date:");
+print h1("Autobuilder log for $commit:");
 
-open my $fh, "<log/log.$date"
-	or die("Can't open file log/log.$date: $!\n");
+my $fn;
+if (-f "pass/$commit") {
+    $fn = "pass/$commit";
+} elsif (-f "fail/$commit") {
+    $fn = "fail/$commit";
+} else {
+    print h2("No log with that id.");
+    exit 1;
+}
+
+open my $fh, "<$fn"
+	or die("$fn: $!\n");
 
 my $in = 0;
 while (defined(my $s = <$fh>))
@@ -43,7 +53,7 @@ while (defined(my $s = <$fh>))
     	    print end_ul;
     	    $in = 0;
     	}
-    } elsif ($s =~ /^Project ".*"/) {
+    } elsif ($s =~ /^Project ".*"/ || $s =~ /^---/) {
     	$class = "msbuild";
     	if ($in) {
     	    print end_ul;
@@ -56,7 +66,7 @@ while (defined(my $s = <$fh>))
     	print start_ul;
     	$in = 1;
     	next;
-    } elsif ($s =~ /^: (warning|error|fatal) : ([^:]+): (.*)/) {
+    } elsif ($s =~ /(warning|error|fatal)\s*: ([^:]+): (.*)/i) {
     	$class = $1;
     	$s = "$2:" . ul($3);
     }

@@ -4,7 +4,7 @@ DATE=$(date "+%Y%m%d")
 
 log()
 {
-	(echo "$@") >&2
+	# (echo "$@") >&2
 	(echo; echo ">>> $@") # log file
 }
 
@@ -16,7 +16,7 @@ _run()
 	
 
 	log "Updating git..."
-	git fetch origin &&
+	git remote update &&
 	git checkout "$BRANCH" &&
 	git reset --hard HEAD || return 20
 	
@@ -56,7 +56,7 @@ for branch in $branches; do
 	echo "$branch ($nicebranch) -> $ref"
 
 	if [ ! -e "out/pass/$ref" -a ! -e "out/fail/$ref" ]; then
-		run $ref >log.out
+		run $ref | perl -pe 's/[\r\n]//g; $_ .= "\n";' | tee log.out
 		CODE=$?
 		if [ "$CODE" = 0 ]; then
 			echo PASS
@@ -69,7 +69,7 @@ for branch in $branches; do
 		echo $ref >out/refs/$nicebranch
 		
 		# only do one build per script invocation
-		break;
+		#exit $CODE
 	else
 		echo $ref >out/refs/$nicebranch
 	fi

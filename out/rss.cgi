@@ -1,7 +1,6 @@
-#!c:\cygwin\bin\perl -w
+#!/usr/bin/perl -w
 use strict;
 use CGI qw/:standard/;
-use File::stat;
 use POSIX qw(strftime);
 
 use lib ".";
@@ -23,65 +22,46 @@ print qq{<rss version='2.0'>
 		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 };
 
-my $rows = 0;
+for my $branch (sort <refs/*>) {
+	next if $branch =~ /~$/;
+	my $branchbase = basename($branch);
 
-for my $filename (sort { $b cmp $a } <result/result.*>) {
-	next if $filename =~ /~$/;
-
-	my $logname = $filename;
-	$logname =~ s{^result/result}{log/log};
+	my $commit = stripwhite(catfile($branch));
+	my $filename;
+	my $failed;
+	if (-f "pass/$commit") {
+		$filename = "pass/$commit";
+		$failed = 0;
+	} elsif (-f "fail/$commit") {
+		$filename = "fail/$commit";
+		$failed = 1;
+	} else {
+		#die("No commit $commit found!\n");
+		next;
+	}
 	
-	my $logcgi = $logname;
-	$logcgi =~ s{^log/log\.}{log.cgi?date=};
-	
-	my $runname = $filename;
-	$runname =~ s{^result/result.(....)(..)(..)}{$1/$2/$3};
-	
-	my $st = stat($filename);
-	my $date = strftime("%a, %d %b %Y %H:%M:%S %z",
-		localtime($st->mtime));
+	my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+	    $atime,$mtime,$ctime,$blksize,$blocks) = stat($filename)
+	    	or die("stat $filename: $!\n");
 
-	open my $fh, "<$filename"
-		or die("open $filename: $!\n");
-
-	my $longstr = find_errors($logname);
+        my $longstr = find_errors($filename);
+	my $codestr = ($failed ? "Error during build!" : 
+		($longstr ? "Warnings found!" : "Pass."));
 		
-	my $did_one = 0;
-	while (<$fh>) {
-		chomp;
-		my ($code, $proj, $codestr) = split(/\s+/, $_, 3);
-		if ($longstr && $code == 0) {
-			$codestr = "Warnings found!";
-		}
-		print qq{
-		  <item>
-			<title>$proj: $codestr</title>
-			<pubDate>$date</pubDate>
-			<link>$url/$logcgi</link>
-			<guid isPermaLink='true'>$url/$logcgi</guid>
-			<description>$codestr\n\n$longstr</description>
-		  </item>
-		};
-		$did_one = 1;
-		$rows++;
-	}
-	close $fh;
+	my $logcgi = "log.cgi?log=$commit";
+
+	my $date = strftime("%a, %d %b %Y %H:%M:%S %z",
+	               localtime($mtime));
 	
-	if (!$did_one) {
-		my $codestr = "Missing - no result codes generated?!";
-		print qq{
-		  <item>
-			<title>NONE: $codestr</title>
-			<pubDate>$date</pubDate>
-			<link>$url/$logcgi</link>
-			<guid isPermaLink='true'>$url/$logcgi</guid>
-			<description>$codestr\n\n$longstr</description>
-		  </item>
-		};
-		$rows++;
-	}
-	
-	last if $rows > 20;
+	print qq{
+	  <item>
+		<title>$branchbase: $codestr</title>
+		<pubDate>$date</pubDate>
+		<link>$url/$logcgi</link>
+		<guid isPermaLink='true'>$url/$logcgi</guid>
+		<description>$codestr\n\n$longstr</description>
+	  </item>
+	};
 }
 
 print "</channel></rss>";
