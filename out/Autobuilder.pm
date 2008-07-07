@@ -1,7 +1,7 @@
 package Autobuilder;
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(find_errors catfile basename stripwhite shorten);
+@EXPORT = qw(find_errors mtime catfile basename stripwhite shorten);
 
 use strict;
 
@@ -20,6 +20,15 @@ sub find_errors($)
 	}
 	close $fh;
 	return $out;
+}
+
+sub mtime($)
+{
+	my $filename = shift @_;
+	my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+	    $atime,$mtime,$ctime,$blksize,$blocks) = stat($filename)
+	    or die("stat $filename: $!\n");
+	return $mtime;
 }
 
 sub catfile(@)

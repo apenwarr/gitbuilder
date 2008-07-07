@@ -22,7 +22,7 @@ print qq{<rss version='2.0'>
 		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 };
 
-for my $branch (sort <refs/*>) {
+for my $branch (sort { mtime($b) cmp mtime($a) } <refs/*>) {
 	next if $branch =~ /~$/;
 	my $branchbase = basename($branch);
 
@@ -40,10 +40,6 @@ for my $branch (sort <refs/*>) {
 		next;
 	}
 	
-	my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
-	    $atime,$mtime,$ctime,$blksize,$blocks) = stat($filename)
-	    	or die("stat $filename: $!\n");
-
         my $longstr = find_errors($filename);
 	my $codestr = ($failed ? "Error during build!" : 
 		($longstr ? "Warnings found!" : "Pass."));
@@ -51,7 +47,7 @@ for my $branch (sort <refs/*>) {
 	my $logcgi = "log.cgi?log=$commit";
 
 	my $date = strftime("%a, %d %b %Y %H:%M:%S %z",
-	               localtime($mtime));
+	               localtime(mtime($filename)));
 	
 	print qq{
 	  <item>
