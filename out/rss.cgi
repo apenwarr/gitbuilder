@@ -27,6 +27,8 @@ for my $branch (sort { mtime($b) cmp mtime($a) } <refs/*>) {
 	my $branchbase = basename($branch);
 
 	my $commit = stripwhite(catfile($branch));
+	next if -f "ignore/$commit";
+	
 	my $filename;
 	my $failed;
 	if (-f "pass/$commit") {

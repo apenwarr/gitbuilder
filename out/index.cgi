@@ -21,6 +21,8 @@ for my $branch (sort <refs/*>) {
 	my $branchbase = basename($branch);
 
 	my $commit = stripwhite(catfile($branch));
+	next if -f "ignore/$commit";
+
 	my $filename;
 	my $failed;
 	if (-f "pass/$commit") {
