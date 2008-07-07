@@ -58,7 +58,9 @@ for branch in $branches; do
 	echo "$branch ($nicebranch) -> $ref"
 
 	if [ ! -e "out/pass/$ref" -a ! -e "out/fail/$ref" ]; then
-		run $ref | perl -pe 's/\r/\n/g; s/\n+/\n/g;' | uniq | tee log.out
+		run $ref | perl -pe 's/\r/\n/g; s/\n+/\n/g;' \
+			| grep -v '^[-\\:A-Za-z0-9_().]* *$' \
+			| tee log.out
 		CODE=${PIPESTATUS[0]}
 		if [ "$CODE" = 0 ]; then
 			echo PASS
