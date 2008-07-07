@@ -13,10 +13,12 @@ $url =~ s{/$relative$}{};
 print "Content-Type: text/xml\n";
 print "\n";
 
-print qq{<rss version='2.0'>
+print qq{<rss version='2.0' xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>Autobuilder results</title>
-		<link>$url/</link>
+		<description>Autobuilder results</description>
+		<link>$url</link>
+		<atom:link href="$url/rss.cgi" rel="self" type="application/rss+xml" />
 		<language>en-ca</language>
 		<generator>CGI</generator>
 		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
@@ -46,7 +48,7 @@ for my $branch (sort { mtime($b) cmp mtime($a) } <refs/*>) {
 	my $codestr = ($failed ? "Error during build!" : 
 		($longstr ? "Warnings found!" : "Pass."));
 		
-	my $logcgi = "log.cgi?log=$commit";
+	my $logcgi = "log.cgi?branch=$branchbase&amp;log=$commit";
 
 	my $date = strftime("%a, %d %b %Y %H:%M:%S %z",
 	               localtime(mtime($filename)));
