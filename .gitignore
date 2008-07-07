@@ -1,4 +1,5 @@
 *~
 /out/fail
 /out/pass
-/src
+/out/refs
+/build

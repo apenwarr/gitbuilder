@@ -11,13 +11,13 @@ log()
 _run()
 {
 	log "Starting at: $(date)"
+	commit="$1"
+	log "Commit: $commit"
 	
 	cd build || return 10
-	
 
-	log "Updating git..."
-	git remote update &&
-	git checkout "$BRANCH" &&
+	log "Switching git branch..."
+	git checkout "$commit" &&
 	git reset --hard HEAD || return 20
 	
 	log "Cleaning..."
@@ -45,6 +45,8 @@ getref()
 
 mkdir -p out/pass out/fail out/refs
 
+( cd build && git remote update )
+
 if [ -n "$*" ]; then
 	branches="$*"
 else
@@ -57,7 +59,7 @@ for branch in $branches; do
 
 	if [ ! -e "out/pass/$ref" -a ! -e "out/fail/$ref" ]; then
 		run $ref | perl -pe 's/\r/\n/g; s/\n+/\n/g;' | uniq | tee log.out
-		CODE=$?
+		CODE=${PIPESTATUS[0]}
 		if [ "$CODE" = 0 ]; then
 			echo PASS
 			mv -v log.out out/pass/$ref
