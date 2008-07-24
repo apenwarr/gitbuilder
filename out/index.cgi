@@ -6,7 +6,10 @@ use POSIX qw(strftime);
 use lib ".";
 use Autobuilder;
 
-print header, start_html("Autobuilder results");
+print header, start_html(
+	-title => "Autobuilder results",
+	-style => {-src => "index.css"}
+);
 
 print Link({-rel=>"alternate", -title=>"Autobuilder results",
 	-href=>"rss.cgi", -type=>"application/rss+xml"});

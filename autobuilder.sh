@@ -53,7 +53,7 @@ else
 	branches=$( (cd build && git-branch -r) )
 fi
 for branch in $branches; do
-	nicebranch=$(echo $branch | sed -e 's,.*/,,' -e 's/[^A-Za-z0-9]/_/g')
+	nicebranch=$(echo $branch | sed -e 's,[^/]*/,,' -e 's/[^A-Za-z0-9]/_/g')
 	ref=$(getref $branch)
 	echo "$branch ($nicebranch) -> $ref"
 
