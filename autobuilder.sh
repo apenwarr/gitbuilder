@@ -24,7 +24,7 @@ _run()
 	git clean -f -x -d || return 30
 	
 	log "Building..."
-	make 2>&1 || return 40
+	../build.sh 2>&1 || return 40
 	
 	log "Done at: $(date)"
 	return 0
