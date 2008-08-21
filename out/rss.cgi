@@ -45,6 +45,9 @@ for my $branch (sort { mtime($b) cmp mtime($a) } <refs/*>) {
 	}
 	
         my $longstr = find_errors($filename);
+        $longstr =~ s/\&/\&amp;/g;
+        $longstr =~ s/</&lt;/g;
+        
 	my $codestr = ($failed ? "Error during build!" : 
 		($longstr ? "Warnings found!" : "Pass."));
 		
