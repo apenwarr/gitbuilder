@@ -19,6 +19,7 @@ cd "$DIR/build"
 			# and only if it's *not* following a failed build
 			pending=$commit
 		fi
+		last=$commit
 	done
 	
 	# if a pending build came before the first failed build, then we need to
@@ -27,7 +28,7 @@ cd "$DIR/build"
 		echo $pending
 	elif [ -n "$fail" -a -n "$pass" ]; then
 		git rev-list --first-parent --bisect $fail^ ^$pass
-	elif [ -n "$fail" ]; then
+	elif [ -n "$fail" -a "$last" != "$fail" ]; then
 		git rev-list --first-parent --bisect $fail^
 	fi
 
