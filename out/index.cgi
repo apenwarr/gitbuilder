@@ -6,6 +6,35 @@ use POSIX qw(strftime);
 use lib ".";
 use Autobuilder;
 
+my @branches = ();
+my %revs = ();
+
+sub load_revcache()
+{
+    open my $fh, "<revcache" or die("revcache: $!\n");
+    my $branch;
+    my @list;
+    while (<$fh>) {
+	chomp;
+	if (/^\:([0-9a-f]+) (.*)/) {
+	    my ($newcommit, $newbranch) = ($1, $2);
+	    if ($branch) {
+		$revs{$branch} = join("\n", @list);
+	    }
+	    push @branches, "$newcommit $newbranch";
+	    $branch = $newbranch;
+	    @list = ();
+	} else {
+	    push @list, $_;
+	}
+    }
+    if ($branch) {
+	$revs{$branch} = join("\n", @list);
+    }
+    close $fh;
+}
+load_revcache();
+
 sub run_cmd(@)
 {
     my @cmdline = @_;
@@ -21,12 +50,20 @@ sub run_cmd(@)
 sub revs_for_branch($$)
 {
     my ($branch, $topcommit) = @_;
-    return run_cmd("../revlist.sh", $branch);
+    if (-x '../revlist.sh') {
+	return run_cmd("../revlist.sh", $branch);
+    } else {
+	return split("\n", $revs{$branch});
+    }
 }
 
 sub list_branches()
 {
-    return run_cmd("../branches.sh");
+    if (-x '../branches.sh') {
+	return run_cmd("../branches.sh");
+    } else {
+	return @branches;
+    }
 }
 
 print header, start_html(

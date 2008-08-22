@@ -71,8 +71,12 @@ sub shorten($$)
 sub git_describe($)
 {
     my $commit = shift;
-    stripwhite(
-	`cd ../build && git-describe --contains --all $commit`);
+    if (-d '../build/.') {
+	return stripwhite(
+	    `cd ../build && git-describe --contains --all $commit`);
+    } else {
+	return stripwhite(catfile("describe/$commit"));
+    }
 }
 
 1;

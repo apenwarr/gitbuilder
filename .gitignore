@@ -3,4 +3,7 @@
 /out/pass
 /out/refs
 /out/ignore
+/out/revcache
+/out/describe
 /build
+*.lock

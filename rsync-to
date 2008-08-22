@@ -1,0 +1,24 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+	echo "Usage: $0 <rsync-dest>" >&2
+	exit 1
+fi
+chmod a+rX -R out
+
+rm -f out/revcache
+./branches.sh | while read topcommit branch; do
+	echo ":$topcommit $branch"
+	./revlist.sh $branch
+done >out/revcache
+
+mkdir -p out/describe
+(
+	cd build
+	for d in ../out/pass/* ../out/fail/*; do
+		b=$(basename $d)
+		git describe --all --contains $b >../out/describe/$b
+	done
+)
+
+exec rsync -za out/. "$1" \
+	--exclude '*~'
