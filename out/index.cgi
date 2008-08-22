@@ -87,9 +87,22 @@ for my $branchinfo (list_branches()) {
     my ($topcommit, $branch) = split(" ", $branchinfo, 2);
     next if -f "ignore/$topcommit";
     my $branchprint = $branch;
+
+    our $last_was_pending = 0;
+    our $print_pending = 1;
     
-    my $last_was_pending = 0;
-    my $print_pending = 1;
+    sub do_pending_dots()
+    {
+	if ($last_was_pending > $print_pending) {
+	    $last_was_pending -= $print_pending;
+	    $print_pending = 0;
+	    print Tr(td($branchprint),
+		td("...$last_was_pending..."), td(""), td(""));
+	    $branchprint = "";
+	}
+	$last_was_pending = 0;
+    }
+    
     foreach my $rev (revs_for_branch($branch, $topcommit)) {
 	my ($commit, $comment) = split(" ", $rev, 2);
 	
@@ -104,6 +117,7 @@ for my $branchinfo (list_branches()) {
 	    $filename = "fail/$commit";
 	    $failed = 1;
 	} elsif ($commit eq $currently_doing) {
+	    do_pending_dots();
 	    print Tr(td($branchprint),
 		td({bgcolor=>'#ffff66'}, "BUILDING"),
 		td(shorten($commit, 7)),
@@ -123,14 +137,7 @@ for my $branchinfo (list_branches()) {
 	    next;
 	}
 	    
-	if ($last_was_pending > $print_pending) {
-	    $last_was_pending -= $print_pending;
-	    $print_pending = 0;
-	    print Tr(td($branchprint),
-		td("...$last_was_pending..."), td(""), td(""));
-	    $branchprint = "";
-	}
-	$last_was_pending = 0;
+	do_pending_dots();
     
 	my $codestr = ($failed ? "Errors" : 
 	    (find_errors($filename) ? "Warnings" : "ok"));
@@ -142,12 +149,7 @@ for my $branchinfo (list_branches()) {
 	$branchprint = "";
     }
     
-    if ($last_was_pending > $print_pending) {
-	$last_was_pending -= $print_pending;
-	print Tr(td($branchprint),
-	    td("...$last_was_pending..."), td(""), td(""));
-	$branchprint = "";
-    }
+    do_pending_dots();
     
     if (!$branchprint) {
 	print Tr(td({colspan=>4}, hr));
