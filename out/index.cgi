@@ -79,10 +79,7 @@ for my $branchinfo (list_branches()) {
 	if ($last_was_pending > $print_pending) {
 	    $last_was_pending -= $print_pending;
 	    $print_pending = 0;
-	    print Tr(td(),
-		td("...$last_was_pending..."),
-		td(""),
-		td(""));
+	    print Tr(td(), td("...$last_was_pending..."), td(""), td(""));
 	}
 	$last_was_pending = 0;
     
@@ -93,6 +90,11 @@ for my $branchinfo (list_branches()) {
 		$failed ? b("FAIL") : "ok"),
 	    td(shorten($commit, 7)),
 	    td(a({-href=>$logcgi}, "$codestr") . " $comment"));
+    }
+    
+    if ($last_was_pending > $print_pending) {
+	$last_was_pending -= $print_pending;
+	print Tr(td(), td("...$last_was_pending..."), td(""), td(""));
     }
 }
 
