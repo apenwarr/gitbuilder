@@ -11,6 +11,7 @@ sub find_errors($)
 {
 	my $filename = shift;
 	my $out = "";
+	my @tail = ();
 	
 	open my $fh, "<$filename"
 		or die("Can't open $filename: $!\n");
@@ -18,9 +19,13 @@ sub find_errors($)
 		if ($s =~ /\s(hint|warning|error|fatal)\s*:\s*(.*)/i) {
 			$out .= "$1: $2\n\n";
 		}
+		push @tail, $s;
+		if (@tail > 25) {
+		    shift @tail;
+		}
 	}
 	close $fh;
-	return $out;
+	return $out . "\n\nLast messages:\n\n@tail\n";
 }
 
 sub mtime($)
