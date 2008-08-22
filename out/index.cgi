@@ -11,7 +11,8 @@ my %revs = ();
 
 sub load_revcache()
 {
-    open my $fh, "<revcache" or die("revcache: $!\n");
+    open my $fh, "<revcache" 
+        or return; # try to survive without it, then
     my $branch;
     my @list;
     while (<$fh>) {
