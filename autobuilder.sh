@@ -13,7 +13,7 @@ fi
 did_something=1
 while [ -n "$did_something" ]; do
 	did_something=
-	./branches.sh | while read commit branch; do
+	for branch in $(./branches.sh | sed 's/^[0-9a-f]* //'); do
 		ref=$(./next-rev.sh $branch)
 		if [ -z "$ref" ]; then
 			echo "$branch: already up to date."
