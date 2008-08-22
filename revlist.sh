@@ -7,7 +7,7 @@ cd "$DIR/build"
 git rev-list --first-parent --pretty=oneline "$@" |
 	while read commit comment; do
 		echo "$commit $comment"
-		if [ -f ../out/pass/$commit ]; then
+		if [ -f ../out/pass/$commit -o -f ../out/ignore/$commit ]; then
 			exit 0;
 		fi
 	done
