@@ -9,18 +9,22 @@ if [ -n "$*" ]; then
 else
 	branches=$( (cd build && git-branch -r) )
 fi
-./branches.sh | while read commit branch; do
-	ref=$(./next-rev.sh $branch)
-	if [ -z "$ref" ]; then
-		echo "$branch: already up to date."
-		continue;
-	fi
-	echo "Building $branch: $ref"
-	./run-build.sh $ref
 
-		
-		# only do one build per script invocation
-		# exit $CODE
+did_something=1
+while [ -n "$did_something" ]; do
+	did_something=
+	./branches.sh | while read commit branch; do
+		ref=$(./next-rev.sh $branch)
+		if [ -z "$ref" ]; then
+			echo "$branch: already up to date."
+			continue;
+		fi
+		did_something=1
+		echo "Building $branch: $ref"
+		./run-build.sh $ref
+	done
+	
+	sleep 5
 done
 
 exit 0
