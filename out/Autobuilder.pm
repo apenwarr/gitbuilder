@@ -52,8 +52,8 @@ sub basename($)
 sub stripwhite($)
 {
 	my $s = shift @_;
-	$s =~ s/^\s+//g;
-	$s =~ s/\s+$//g;
+	$s =~ s/^\s+//mg;
+	$s =~ s/\s+$//mg;
 	return $s;
 }
 
