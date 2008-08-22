@@ -44,7 +44,7 @@ for my $path (sort { mtime($b) cmp mtime($a) } @all) {
 	next;
     }
     
-    my $longstr = find_errors($filename);
+    my $longstr = "$commit\n\n" . find_errors($filename);
     $longstr =~ s/\&/\&amp;/g;
     $longstr =~ s/</&lt;/g;
     
