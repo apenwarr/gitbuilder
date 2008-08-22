@@ -1,7 +1,8 @@
 package Autobuilder;
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(find_errors mtime catfile basename stripwhite shorten);
+@EXPORT = qw(find_errors mtime catfile basename stripwhite 
+    shorten git_describe);
 
 use strict;
 
@@ -67,5 +68,11 @@ sub shorten($$)
 	}
 }
 
+sub git_describe($)
+{
+    my $commit = shift;
+    stripwhite(
+	`cd ../build && git-describe --contains --all $commit`);
+}
 
 1;

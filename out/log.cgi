@@ -1,6 +1,8 @@
 #!/usr/bin/perl -w
 use strict;
 use CGI::Pretty qw/:standard *table start_ul end_ul start_li end_li/;
+use lib ".";
+use Autobuilder;
 
 my $commit = param('log');
 $commit =~ s/[^0-9A-Za-z]/_/g;
@@ -12,7 +14,8 @@ print header, start_html(
 );
 
 print div({-style=>'float: right'}, a({-href=>"."}, "<< index"));
-print h1("Autobuilder log for $commit:");
+my $name = git_describe($commit);
+print h1("Autobuilder log for <b><u>$name</u></b> ($commit):");
 
 my $fn;
 if (-f "pass/$commit") {

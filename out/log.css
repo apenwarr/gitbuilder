@@ -2,6 +2,11 @@ body {
 	font-family: "Andale Mono", "Courier New", monospace;
 }
 
+h1 {
+    	font-family: serif;
+	font-weight: normal;
+}
+
 .debug, .warning, .error, .fatal {
 	white-space: nowrap;
 }

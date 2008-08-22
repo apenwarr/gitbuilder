@@ -24,47 +24,47 @@ print qq{<rss version='2.0' xmlns:atom="http://www.w3.org/2005/Atom">
 		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 };
 
-for my $branch (sort { mtime($b) cmp mtime($a) } <refs/*>) {
-	next if $branch =~ /~$/;
-	my $branchbase = basename($branch);
-
-	my $commit = stripwhite(catfile($branch));
-	next if -f "ignore/$commit";
-	
-	my $filename;
-	my $failed;
-	if (-f "pass/$commit") {
-		$filename = "pass/$commit";
-		$failed = 0;
-	} elsif (-f "fail/$commit") {
-		$filename = "fail/$commit";
-		$failed = 1;
-	} else {
-		#die("No commit $commit found!\n");
-		next;
-	}
-	
-        my $longstr = find_errors($filename);
-        $longstr =~ s/\&/\&amp;/g;
-        $longstr =~ s/</&lt;/g;
-        
-	my $codestr = ($failed ? "Error during build!" : 
-		($longstr ? "Warnings found!" : "Pass."));
-		
-	my $logcgi = "log.cgi?branch=$branchbase&amp;log=$commit";
-
-	my $date = strftime("%a, %d %b %Y %H:%M:%S %z",
-	               localtime(mtime($filename)));
-	
-	print qq{
-	  <item>
-		<title>$branchbase: $codestr</title>
-		<pubDate>$date</pubDate>
-		<link>$url/$logcgi</link>
-		<guid isPermaLink='true'>$url/$logcgi</guid>
-		<description>$codestr\n\n$longstr</description>
-	  </item>
-	};
+my @all = (glob("pass/*"), glob("fail/*"));
+my $i = 0;
+for my $path (sort { mtime($b) cmp mtime($a) } @all) {
+    last if ++$i > 10;
+    my $commit = basename($path);
+    my $name = git_describe($commit);
+    
+    my $filename;
+    my $failed;
+    if (-f "pass/$commit") {
+	$filename = "pass/$commit";
+	$failed = 0;
+    } elsif (-f "fail/$commit") {
+	$filename = "fail/$commit";
+	$failed = 1;
+    } else {
+	die("No commit $commit found?!\n");
+	next;
+    }
+    
+    my $longstr = find_errors($filename);
+    $longstr =~ s/\&/\&amp;/g;
+    $longstr =~ s/</&lt;/g;
+    
+    my $codestr = ($failed ? "ERRORS" : 
+	($longstr ? "WARNINGS" : "ok"));
+    
+    my $logcgi = "log.cgi?log=$commit";
+    
+    my $date = strftime("%a, %d %b %Y %H:%M:%S %z",
+	localtime(mtime($filename)));
+    
+    print qq{
+	<item>
+	  <title>$codestr $name</title>
+	  <pubDate>$date</pubDate>
+	  <link>$url/$logcgi</link>
+	  <guid isPermaLink='true'>$url/$logcgi</guid>
+	  <description>$codestr\n\n$longstr</description>
+	</item>
+    };
 }
 
 print "</channel></rss>";
