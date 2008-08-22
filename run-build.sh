@@ -46,6 +46,8 @@ run()
 	return $CODE
 }
 
+echo $ref >out/.doing
+rm -f out/pass/$ref out/fail/$ref
 run $ref | perl -pe 's/\r/\n/g; s/\n+/\n/g;' \
 	| grep -v '^[-\\:A-Za-z0-9_().]* *$' \
 	| tee log.out
@@ -59,3 +61,4 @@ else
 fi
 
 echo "Done: $ref"
+rm -f out/.doing

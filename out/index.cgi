@@ -36,6 +36,8 @@ sub load_revcache()
 }
 load_revcache();
 
+my $currently_doing = (-f '.doing') && stripwhite(catfile(".doing"));
+
 sub run_cmd(@)
 {
     my @cmdline = @_;
@@ -101,6 +103,13 @@ for my $branchinfo (list_branches()) {
 	} elsif (-f "fail/$commit") {
 	    $filename = "fail/$commit";
 	    $failed = 1;
+	} elsif ($commit eq $currently_doing) {
+	    print Tr(td($branchprint),
+		td({bgcolor=>'#ffff66'}, "BUILDING"),
+		td(shorten($commit, 7)),
+		td($comment));
+	    $branchprint = "";
+	    next;
 	} elsif ($last_was_pending == 0 && $print_pending) {
 	    print Tr(td($branchprint),
 		td("(Pending)"),
