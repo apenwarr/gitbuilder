@@ -50,6 +50,7 @@ for my $branchinfo (list_branches()) {
     print Tr(td({colspan=>4}, $branch));
     
     my $last_was_pending = 0;
+    my $print_pending = 1;
     foreach my $rev (revs_for_branch($branch, $topcommit)) {
 	my ($commit, $comment) = split(" ", $rev, 2);
 	
@@ -63,7 +64,7 @@ for my $branchinfo (list_branches()) {
 	} elsif (-f "fail/$commit") {
 	    $filename = "fail/$commit";
 	    $failed = 1;
-	} elsif ($last_was_pending == 0) {
+	} elsif ($last_was_pending == 0 && $print_pending) {
 	    print Tr(td(),
 		td("(Pending)"),
 		td(shorten($commit, 7)),
@@ -75,8 +76,9 @@ for my $branchinfo (list_branches()) {
 	    next;
 	}
 	    
-	if ($last_was_pending > 1) {
-	    $last_was_pending--;
+	if ($last_was_pending > $print_pending) {
+	    $last_was_pending -= $print_pending;
+	    $print_pending = 0;
 	    print Tr(td(),
 		td("...$last_was_pending..."),
 		td(""),
