@@ -26,9 +26,9 @@ cd "$DIR/build"
 	if [ -n "$pending" ]; then
 		echo $pending
 	elif [ -n "$fail" -a -n "$pass" ]; then
-		git rev-list --first-parent --bisect $fail ^$pass
+		git rev-list --first-parent --bisect $fail^ ^$pass
 	elif [ -n "$fail" ]; then
-		git rev-list --first-parent --bisect $fail
+		git rev-list --first-parent --bisect $fail^
 	fi
 
 	# if we don't print anything at all, it means there's nothing to build!
