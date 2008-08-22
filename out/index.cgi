@@ -46,8 +46,7 @@ print Tr(th("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
 for my $branchinfo (list_branches()) {
     my ($topcommit, $branch) = split(" ", $branchinfo, 2);
     next if -f "ignore/$topcommit";
-    
-    print Tr(td({colspan=>4}, $branch));
+    my $branchprint = $branch;
     
     my $last_was_pending = 0;
     my $print_pending = 1;
@@ -65,11 +64,12 @@ for my $branchinfo (list_branches()) {
 	    $filename = "fail/$commit";
 	    $failed = 1;
 	} elsif ($last_was_pending == 0 && $print_pending) {
-	    print Tr(td(),
+	    print Tr(td($branchprint),
 		td("(Pending)"),
 		td(shorten($commit, 7)),
 		td($comment));
 	    $last_was_pending = 1;
+	    $branchprint = "";
 	    next;
 	} else {
 	    $last_was_pending++;
@@ -79,23 +79,30 @@ for my $branchinfo (list_branches()) {
 	if ($last_was_pending > $print_pending) {
 	    $last_was_pending -= $print_pending;
 	    $print_pending = 0;
-	    print Tr(td(), td("...$last_was_pending..."), td(""), td(""));
+	    print Tr(td($branchprint),
+		td("...$last_was_pending..."), td(""), td(""));
+	    $branchprint = "";
 	}
 	$last_was_pending = 0;
     
 	my $codestr = ($failed ? "Errors" : 
 	    (find_errors($filename) ? "Warnings" : "ok"));
-	print Tr(td(),
+	print Tr(td($branchprint),
 	    td({bgcolor=>($failed ? "#ff6666" : "#66ff66")},
 		$failed ? b("FAIL") : "ok"),
 	    td(shorten($commit, 7)),
 	    td(a({-href=>$logcgi}, "$codestr") . " $comment"));
+	$branchprint = "";
     }
     
     if ($last_was_pending > $print_pending) {
 	$last_was_pending -= $print_pending;
-	print Tr(td(), td("...$last_was_pending..."), td(""), td(""));
+	print Tr(td($branchprint),
+	    td("...$last_was_pending..."), td(""), td(""));
+	$branchprint = "";
     }
+    
+    print Tr(td({colspan=>4}, hr));
 }
 
 print end_table();
