@@ -149,7 +149,9 @@ for my $branchinfo (list_branches()) {
 	$branchprint = "";
     }
     
-    print Tr(td({colspan=>4}, hr));
+    if (!$branchprint) {
+	print Tr(td({colspan=>4}, hr));
+    }
 }
 
 print end_table();
