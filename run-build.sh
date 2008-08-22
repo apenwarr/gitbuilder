@@ -57,3 +57,5 @@ else
 	echo FAIL
 	mv -v log.out out/fail/$ref
 fi
+
+echo "Done: $ref"
