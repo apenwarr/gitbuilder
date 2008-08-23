@@ -53,15 +53,16 @@ for my $path (sort { mtime($b) cmp mtime($a) } @all) {
     
     my $logcgi = "log.cgi?log=$commit";
     
+    my $mtime = mtime($filename);
     my $date = strftime("%a, %d %b %Y %H:%M:%S %z",
-	localtime(mtime($filename)));
+	localtime($mtime));
     
     print qq{
 	<item>
 	  <title>$codestr $name</title>
 	  <pubDate>$date</pubDate>
 	  <link>$url/$logcgi</link>
-	  <guid isPermaLink='true'>$url/$logcgi</guid>
+	  <guid isPermaLink='true'>$url/$logcgi#$mtime</guid>
 	  <description>$codestr\n\n$longstr</description>
 	</item>
     };
