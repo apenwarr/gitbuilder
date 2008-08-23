@@ -2,6 +2,16 @@
 DIR=$(dirname $0)
 cd "$DIR/build"
 
+bisect()
+{
+	git rev-list --first-parent --bisect-all "$@" |
+		while read x y; do
+			[ -e ../out/pass/$x -o -e ../out/fail/$x ] && continue
+			echo $x
+			exit 0
+		done
+}
+
 ../revlist.sh "$@" | (
 	pass=
 	fail=
@@ -27,9 +37,9 @@ cd "$DIR/build"
 	if [ -n "$pending" ]; then
 		echo $pending
 	elif [ -n "$fail" -a -n "$pass" ]; then
-		git rev-list --first-parent --bisect $fail^ ^$pass
-	elif [ -n "$fail" -a "$last" != "$fail" ]; then
-		git rev-list --first-parent --bisect $fail^
+		bisect $fail^ ^$pass
+	elif [ -n "$fail" -a "$last" != "$fail" -a -n "$last" ]; then
+		bisect $fail^ ^$last
 	fi
 
 	# if we don't print anything at all, it means there's nothing to build!
