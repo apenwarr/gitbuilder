@@ -10,5 +10,5 @@ git show-ref |
 		if [ -e ../out/ignore/$commit ]; then
 			continue;
 		fi
-		echo "$commit $branch"
+		echo "$branch"
 	done

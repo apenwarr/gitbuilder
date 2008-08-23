@@ -33,7 +33,7 @@ did_something=1
 while [ -n "$did_something" ]; do
 	( cd build && git remote update )
 	did_something=
-	for branch in $(./branches.sh | sed 's/^[0-9a-f]* //'); do
+	for branch in $(./branches.sh); do
 		ref=$(./next-rev.sh $branch)
 		if [ -z "$ref" ]; then
 			echo "$branch: already up to date."

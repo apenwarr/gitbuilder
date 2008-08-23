@@ -17,12 +17,12 @@ sub load_revcache()
     my @list;
     while (<$fh>) {
 	chomp;
-	if (/^\:([0-9a-f]+) (.*)/) {
-	    my ($newcommit, $newbranch) = ($1, $2);
+	if (/^\:(\S+)/) {
+	    my $newbranch = $1;
 	    if ($branch) {
 		$revs{$branch} = join("\n", @list);
 	    }
-	    push @branches, "$newcommit $newbranch";
+	    push @branches, $newbranch;
 	    $branch = $newbranch;
 	    @list = ();
 	} else {
@@ -36,7 +36,7 @@ sub load_revcache()
 }
 load_revcache();
 
-my $currently_doing = (-f '.doing') && stripwhite(catfile(".doing"));
+my $currently_doing = (-f '.doing') && stripwhite(catfile(".doing")) || "";
 
 sub run_cmd(@)
 {
@@ -50,9 +50,9 @@ sub run_cmd(@)
     return @out;
 }
 
-sub revs_for_branch($$)
+sub revs_for_branch($)
 {
-    my ($branch, $topcommit) = @_;
+    my $branch = shift;
     if (-x '../revlist.sh') {
 	return run_cmd("../revlist.sh", $branch);
     } else {
@@ -83,9 +83,7 @@ print start_table();
 print Tr(th("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
     th("Result"), th("Commit"), th("Details"));
 
-for my $branchinfo (list_branches()) {
-    my ($topcommit, $branch) = split(" ", $branchinfo, 2);
-    next if -f "ignore/$topcommit";
+for my $branch (list_branches()) {
     my $branchprint = $branch;
 
     our $last_was_pending = 0;
@@ -103,7 +101,7 @@ for my $branchinfo (list_branches()) {
 	$last_was_pending = 0;
     }
     
-    foreach my $rev (revs_for_branch($branch, $topcommit)) {
+    foreach my $rev (revs_for_branch($branch)) {
 	my ($commit, $comment) = split(" ", $rev, 2);
 	
 	my $filename;
