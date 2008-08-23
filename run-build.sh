@@ -26,9 +26,11 @@ _run()
 
 	log "Switching git branch..."
 	git checkout "$commit" &&
+	git reset --hard HEAD || 
 	git reset --hard HEAD || return 20
 	
 	log "Cleaning..."
+	git clean -f -x -d || 
 	git clean -f -x -d || return 30
 	
 	log "Building..."
