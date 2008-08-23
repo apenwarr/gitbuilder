@@ -21,7 +21,12 @@ while [ -n "$did_something" ]; do
 		fi
 		did_something=1
 		echo "Building $branch: $ref"
-		./run-build.sh $ref
+		set -m
+		./run-build.sh $ref &
+		XPID=$!
+		trap "echo 'Killing (SIGINT)';  kill -TERM -$XPID; exit 1" SIGINT
+		trap "echo 'Killing (SIGTERM)'; kill -TERM -$XPID; exit 1" SIGTERM
+		wait; wait
 	done
 	
 	sleep 5

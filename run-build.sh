@@ -46,19 +46,31 @@ run()
 	return $CODE
 }
 
-echo $ref >out/.doing
-rm -f out/pass/$ref out/fail/$ref
-run $ref | perl -pe 's/\r/\n/g; s/\n+/\n/g;' \
-	| grep -v '^[-\\:A-Za-z0-9_().]* *$' \
-	| tee log.out
-CODE=${PIPESTATUS[0]}
-if [ "$CODE" = 0 ]; then
-	echo PASS
-	mv -v log.out out/pass/$ref
-else
-	echo FAIL
-	mv -v log.out out/fail/$ref
-fi
+go()
+{
+	echo $ref >out/.doing
+	rm -f out/pass/$ref out/fail/$ref
+	run $ref | perl -pe 's/\r/\n/g; s/\n+/\n/g;' \
+		| grep -v '^[-\\:A-Za-z0-9_().]* *$' \
+		| tee log.out
+	CODE=${PIPESTATUS[0]}
+	if [ "$CODE" = 0 ]; then
+		echo PASS
+		mv -v log.out out/pass/$ref
+	else
+		echo FAIL
+		mv -v log.out out/fail/$ref
+	fi
 
-echo "Done: $ref"
-rm -f out/.doing
+	echo "Done: $ref"
+	rm -f out/.doing
+}
+
+set -m
+go &
+XPID=$!
+trap "echo 'Killing (SIGINT)';  kill -TERM -$XPID; exit 1" SIGINT
+trap "echo 'Killing (SIGTERM)'; kill -TERM -$XPID; exit 1" SIGTERM
+wait; wait
+
+exit 0

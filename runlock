@@ -12,9 +12,19 @@ my $filename = shift @ARGV;
 
 my $lock = $lm->trylock($filename);
 if (defined($lock)) {
+    my $pid = fork();
+    if ($pid) {
+	# parent
+	local $SIG{INT} = sub { kill 2, $pid; };
+	local $SIG{TERM} = sub { kill 15, $pid; };
+	my $ret = waitpid $pid, 0;
+	$lock->release;
+	exit $ret;
+    } else {
+	# child
+	exec(@ARGV);
+    }
     my $ret = system(@ARGV);
-    $lock->release;
-    exit $ret;
 }
 
 # didn't obtain lock, so didn't run; call that success, so we don't pop up
