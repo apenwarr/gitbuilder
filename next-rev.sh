@@ -4,7 +4,8 @@ cd "$DIR/build"
 
 bisect()
 {
-	git rev-list --first-parent --bisect-all "$@" |
+	(git rev-list --first-parent --bisect-all "$@" ||
+	 git rev-list --first-parent "$@" ) |
 		while read x y; do
 			[ -e ../out/pass/$x -o -e ../out/fail/$x ] && continue
 			echo $x
