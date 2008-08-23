@@ -39,6 +39,10 @@ while [ -n "$did_something" ]; do
 			echo "$branch: already up to date."
 			continue;
 		fi
+		if [ -e "out/pass/$ref" -o -e "out/fail/$ref" ]; then
+			echo "$branch: weird, already built $ref!"
+			continue
+		fi
 		did_something=1
 		echo "Building $branch: $ref"
 		set -m
