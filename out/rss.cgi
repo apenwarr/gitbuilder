@@ -27,7 +27,7 @@ print qq{<rss version='2.0' xmlns:atom="http://www.w3.org/2005/Atom">
 my @all = (glob("pass/*"), glob("fail/*"));
 my $i = 0;
 for my $path (sort { mtime($b) cmp mtime($a) } @all) {
-    last if ++$i > 10;
+    last if ++$i > 20;
     my $commit = basename($path);
     my $name = git_describe($commit);
     
