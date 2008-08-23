@@ -1,12 +1,12 @@
 package Autobuilder;
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(find_errors mtime catfile basename stripwhite 
+@EXPORT = qw(find_errors squish_log mtime catfile basename stripwhite 
     shorten git_describe);
 
 use strict;
 
-
+my $err_tail = "";
 sub find_errors($)
 {
 	my $filename = shift;
@@ -16,7 +16,7 @@ sub find_errors($)
 	open my $fh, "<$filename"
 		or die("Can't open $filename: $!\n");
 	while (defined(my $s = <$fh>)) {
-		if ($s =~ /\s(hint|warning|error|fatal)\s*:\s*(.*)/i) {
+		if ($s =~ /\s*(hint|warning|error|fatal)\s*:\s*(.*)/i) {
 			$out .= "$1: $2\n\n";
 		}
 		push @tail, $s;
@@ -25,7 +25,14 @@ sub find_errors($)
 		}
 	}
 	close $fh;
-	return $out . "\n\nLast messages:\n\n@tail\n";
+	$err_tail = "\n\nLast messages:\n\n@tail\n";
+	return $out;
+}
+
+sub squish_log($)
+{
+	my $filename = shift;
+        return find_errors($filename) . $err_tail;
 }
 
 sub mtime($)

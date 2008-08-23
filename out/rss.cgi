@@ -44,12 +44,13 @@ for my $path (sort { mtime($b) cmp mtime($a) } @all) {
 	next;
     }
     
-    my $longstr = "$commit\n\n" . find_errors($filename);
+    my $errs = find_errors($filename);
+    my $longstr = "$commit\n\n" . squish_log($filename);
     $longstr =~ s/\&/\&amp;/g;
     $longstr =~ s/</&lt;/g;
     
     my $codestr = ($failed ? "ERRORS" : 
-	($longstr ? "WARNINGS" : "ok"));
+	($errs ? "WARNINGS" : "ok"));
     
     my $logcgi = "log.cgi?log=$commit";
     
