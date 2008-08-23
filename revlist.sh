@@ -4,7 +4,7 @@ cd "$DIR/build"
 
 #ls ../out/pass/* |
 #	sed -e 's,^\(.*/\)*\([0-9a-f]*\).*$,^\2^,g' |
-git rev-list --first-parent --pretty=oneline --max-count=500 "$@" |
+git rev-list --first-parent --pretty=oneline "$@" |
 	while read commit comment; do
 		if [ -f ../out/ignore/$commit ]; then
 			# never print an ignored commit
