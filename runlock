@@ -7,7 +7,8 @@ if (@ARGV < 2) {
     exit 127;
 }	
 
-my $lm = LockFile::Simple->make(-stale=>1) or die("makelock: $!\n");
+my $lm = LockFile::Simple->make(-stale=>1, -hold=>0) 
+    or die("makelock: $!\n");
 my $filename = shift @ARGV;
 
 my $lock = $lm->trylock($filename);
