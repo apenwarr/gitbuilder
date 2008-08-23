@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 #
 # Copy this file to build.sh so that gitbuilder can run it.
 #
@@ -11,12 +11,13 @@
 
 # Use this so that our script aborts immediately when any of the commands
 # fail.  If we don't do this, gitbuilder might not notice our compile errors!
-set -x
+set -e
 
 # Don't forget to run autoconf and ./configure, if that's what your project
 # needs.
-#autoconf
-#./configure
+[ ! -x autogen.sh ] || ./autogen.sh
+autoconf || true
+[ ! -x configure ] || ./configure
 
 # Actually build the project
 make
