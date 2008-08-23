@@ -1,0 +1,7 @@
+#!/bin/bash
+if [ ! -e lock.lock ]; then
+	echo "Not running; lock.lock doesn't exist."
+	exit 1
+fi
+
+kill $(cat lock.lock)
