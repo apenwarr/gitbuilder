@@ -1,0 +1,231 @@
+Welcome to gitbuilder, an autobuilder tool for your favourite git-managed
+development project.
+
+
+WHAT IT DOES
+============
+
+gitbuilder retrieves the latest version of your project from its git
+repository, then builds the most recent versions of all the tags and all the
+branches in the entire repository.  If any of them have build failures, it
+automatically does a "git bisect" style operation to try to track down the
+most recent version that compiled successfully.  With that information, you
+should be able to identify exactly which commit caused the problem, as well
+as exactly who was responsible.
+
+gitbuilder's results are available via the web and via an RSS feed.  To see
+what the results look like, visit the gitbuilder site for the Versaplex
+project:
+
+	http://www.versabanq.com/demo/vxautobuilder/
+	
+or its RSS feed:
+
+	http://www.versabanq.com/demo/vxautobuilder/rss.cgi
+
+
+INSTALLING
+==========
+
+Installing gitbuilder is supposed to be easy.  It should run on any system
+with perl, bash, and git installed.  Follow these steps to get started:
+
+1. Get a copy of the latest gitbuilder repository.  (If you're reading this,
+   maybe you already did this step!):
+   
+	git clone git://github.com/apenwarr/gitbuilder.git
+
+2. Go into the gitbuilder directory and clone a copy of the application to
+   test.  For your convenience, we made a handy test project that you can use
+   to try out gitbuilder's features, which you can clone with a command like
+   the following:
+	
+	cd gitbuilder
+	git clone git://github.com/apenwarr/builder-test.git build
+
+   !!NOTE!!  See the third word on the second line?  You have to clone your
+   project into a directory called 'build', not the normal directory git
+   would assign it by default.  Otherwise gitbuilder wouldn't know how to
+   build it!
+   
+3. Make a build.sh script with the instructions required to build your
+   project.  It would sure be nice if everyone's project could just be built
+   by checking it out and typing "make", right?  But we know that's not the
+   case, because there are often things like autoconf involved.  Luckily,
+   we provided a handy sample build.sh script to go with the handy sample
+   project:
+   
+	cp build.sh.example build.sh
+
+4. To see gitbuilder's output, you'll need a web server configured to run
+   .cgi scripts properly.  Configuring your web server is beyond the scope
+   of this document, but if you already have such a server, maybe something
+   like this will work for you:
+   
+	ln -s $PWD/out ~/public_html/gitbuilder
+	
+   If it worked, you should now be able to go to this page in your web
+   browser:
+   
+   	http://localhost/~YOUR_USERNAME_GOES_HERE/gitbuilder/
+   
+   (where YOUR_USERNAME_GOES_HERE is replaced with your actual username, of
+   course.)
+
+5. Okay, we're ready to go!  Start the autobuilder process!
+
+	./start
+	
+6. Now you can go back to your web browser and reload the page repeatedly. 
+   If you're using the sample builder-test project, you should see
+   gitbuilder do some simple bisection across a few branches as it tries
+   to track down the broken and non-broken versions automatically.
+   
+
+SHARING YOUR AUTOBUILDER RESULTS WITH THE PUBLIC
+=================================================
+
+Now, maybe the computer you use for autobuilding is wide open on the
+Internet, so your internal web server can be shared with everyone.  In that
+case, congratulations!  You're done.  Just send the URL to all your friends.
+
+But if you like to have a little bit of security between your development
+network and the Internet, you'll need to do one more step.  You can rsync
+the gitbuilder output files to your favourite public Internet server. 
+(Bonus: the public server doesn't need to have git or a compiler installed!)
+We provided a handy script to do this for you automatically:
+
+	./rsync-to my-public-server:public_html/gitbuilder
+	
+
+SETTING UP AN AUTOBUILDER IN CRON
+=================================
+
+Now that your gitbuilder is working, you probably want to have it continue
+to update itself automatically.  gitbuilder is designed to make it safe to
+do that.  Try adding a line like this to your crontab (using crontab -e):
+
+	* *  * * *  nice ~/src/gitbuilder/start >/dev/null 2>&1
+
+This restarts the autobuilder every minute, in case it had stopped in the
+meantime.  If it was already running, the "start" script is smart enough not
+to start it again.  Of course, you can change the cron settings to run less
+often if that's what you want.
+
+If you're using recent Linux 2.6.x kernels and you want to eliminate the
+effect on your CPU and disk of running gitbuilder in the background, you
+should try out ionice.  You can change your cron command to something like
+this:
+
+	* *  * * *  ionice -c3 nice -20 ~/src/gitbuilder/start >/dev/null 2>&1
+	
+ionice is extremely powerful; if your system supports it the above command
+will make it so that your gitbuilder will *only* use the disk if nobody else
+is using it right now.  On my system, this makes gitbuilder completely
+unnoticeable, even though it spends most of its time building in the
+background.  Cool!
+
+Note: in the above, we redirected the output to /dev/null because otherwise
+you'd get an email every minute.  But redirecting your error output isn't a
+very safe thing to do; how will you know if something actually goes wrong? 
+
+If you want a better way to monitor your cron jobs, try out my cron2rss
+project:
+
+	http://github.com/apenwarr/cron2rss/
+
+
+DETAILED COMMANDS
+=================
+
+gitbuilder is a collection of several tiny scripts that do simple things. 
+You might want to know about these scripts in case you want to customize how
+gitbuilder works.  Here we go:
+
+	start: just basically runs this command:
+		./runlock lock ./autobuilder.sh
+		
+	stop: stop the autobuilder, basically by running:
+		kill $(cat lock.lock)
+	
+	runlock: runs a program only if the given lockfile isn't locked.
+	  This is how we ensure that the autobuilder script doesn't run
+	  more than once simultaneously.
+	  
+	lock.lock: the file created by runlock if the first parameter is
+	  'lock'.
+	  
+	autobuilder.sh: fetches your build/ directory, chooses branches with
+	  branches.sh, chooses revisions to build on each branch with
+	  next-rev.sh, and then runs run-build.sh on each selected revision.
+	  
+	run-build.sh: checks out a given revision from git in the build/
+	  directory, then runs build.sh.
+	  
+	build.sh: a script provided *by you* that builds your application. 
+	  See build.sh.example.
+
+	branches.sh: get a list of interesting branches in the build/
+	  directory.
+	  
+	revlist.sh: given a branch name, gets a list of all the revisions
+	  starting from that branch's HEAD and stopping at the first
+	  revision that has been built successfully in the past.  Basically,
+	  this lists all the recent revisions on a branch that haven't been
+	  built successfully yet.
+	  
+	next-rev.sh: given a branch name, picks out exactly one revision
+	  from revlist.sh's output that will most help narrow down where any
+	  problems might have come from.
+	  
+	rsync-to: a simple script to rsync the out/ directory to a web
+	  server somewhere so you can show it to the public.
+
+	out/index.cgi: the main script for generating an HTML view of your
+	  autobuilder.
+	  
+	out/rss.cgi: the main script for generating an RSS view of your
+	  autobuilder.
+	  
+	out/log.cgi: a simple script for highlighting and viewing build log
+	  output.
+	  
+
+DATA FORMAT
+===========
+
+gitbuilder's output data format is very simple.  It consists of files in the
+out/pass/, out/fail/, and out/ignore/ directories.
+
+	out/pass/: files in here are named after the SHA-1 of the git commit
+	  that we tried to build.  If a particular commit shows up here, it
+	  means that we've successfully build that version in the past, so we
+	  don't need to try building it anymore.  The content of each file
+	  is the stdout/stderr of build.sh on the successful run.
+
+	out/fail/: just like out/pass/, only for failed builds.
+	
+	out/ignore/: this directory is never written to by gitbuilder, but
+	  you can create files here yourself (using the 'touch' command),
+	  named after the SHA-1 of commits you want to ignore.  For example,
+	  if you have a tag that you're tired of seeing in the autobuilder
+	  output, you can get its SHA-1 (available by running 
+	  ./branches.sh | grep BRANCHNAME) and create a file here.
+	  
+	  Or maybe you know that your project simply never builds successfully
+	  before a particular revision.  For example, maybe build.sh tries
+	  to do "make test", but your project didn't have "make test"
+	  before last week, so all the builds before that will surely fail.
+	  In that case, you can pick the version before you added "make
+	  test" and reference it in the out/ignore/ directory.  gitbuilder
+	  will then happily ignore all the versions before that one when
+	  it tries to track down problems.
+
+HINT: Did you screw up your build.sh and end up with a lot of incorrect
+      pass/fail indicators?  It's safe to just "rm out/pass/* out/fail/*"
+      and let gitbuilder start over again.
+
+
+Good luck, and let me know how it works for you!
+
+-- Avery <apenwarr@gmail.com>
