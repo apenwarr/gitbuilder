@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+# Copy this file to build.sh so that gitbuilder can run it.
+#
+# What happens is that gitbuilder will checkout the revision of your software
+# it wants to build in the directory called gitbuilder/build/.  Then it
+# does "cd build" and then "../build.sh" to run your script.
+#
+# You might want to run ./configure here, make, make test, etc.
+#
+
+# Use this so that our script aborts immediately when any of the commands
+# fail.  If we don't do this, gitbuilder might not notice our compile errors!
+set -x
+
+# Don't forget to run autoconf and ./configure, if that's what your project
+# needs.
+#autoconf
+#./configure
+
+# Actually build the project
+make
+
+# If applicable, maybe you want to run your project's unit tests.
+#make test
+
