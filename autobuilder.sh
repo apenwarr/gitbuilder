@@ -2,6 +2,17 @@
 DIR="$(dirname $0)"
 cd "$DIR"
 
+if [ ! -d build/. ]; then
+	echo >&2
+	echo "We need a directory named build/ in this directory." >&2
+	echo "You should 'git clone' the project you want to test," >&2
+	echo "like this:" >&2
+	echo >&2
+	echo "    git clone /path/to/myproject.git build" >&2
+	echo >&2
+	exit 2
+fi
+
 if [ -e build.sh -a ! -x build.sh ]; then
 	chmod a+x build.sh
 fi
