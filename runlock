@@ -18,9 +18,13 @@ if (defined($lock)) {
 	# parent
 	local $SIG{INT} = sub { kill 2, $pid; };
 	local $SIG{TERM} = sub { kill 15, $pid; };
-	my $ret = waitpid $pid, 0;
+	my $newpid = waitpid($pid, 0);
+	if ($newpid != $pid) {
+	    die("waitpid returned '$newpid', expected '$pid'\n");
+	}	
+	my $ret = $?;
 	$lock->release;
-	exit $ret;
+	exit $? >> 8;
     } else {
 	# child
 	exec(@ARGV);
