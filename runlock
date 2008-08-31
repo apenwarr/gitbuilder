@@ -29,7 +29,8 @@ if (defined($lock)) {
 	# child
 	exec(@ARGV);
     }
-    my $ret = system(@ARGV);
+    
+    # NOTREACHED
 }
 
 # didn't obtain lock, so didn't run; call that success, so we don't pop up
