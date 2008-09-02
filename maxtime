@@ -1,0 +1,31 @@
+#!/usr/bin/perl -w
+use strict;
+
+if (@ARGV < 2) {
+    print STDERR "Usage: $0 <maxtime-seconds> <command line...>\n";
+    print STDERR "  Run a program, killing it after maxtime-seconds.\n";
+    exit 127;
+}	
+
+my $maxtime = shift @ARGV;
+
+my $pid = fork();
+if ($pid) {
+    # parent
+    local $SIG{INT} = sub { kill 2, $pid; };
+    local $SIG{TERM} = sub { kill 15, $pid; };
+    local $SIG{ALRM} = sub { kill 15, $pid; sleep 1; kill 9, $pid; exit 98; };
+    alarm $maxtime;
+    my $newpid = waitpid($pid, 0);
+    if ($newpid != $pid) {
+        die("waitpid returned '$newpid', expected '$pid'\n");
+    }	
+    my $ret = $?;
+    exit $? >> 8;
+} else {
+    # child
+    exec(@ARGV);
+}
+
+# NOTREACHED
+exit 99;
