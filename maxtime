@@ -12,9 +12,9 @@ my $maxtime = shift @ARGV;
 my $pid = fork();
 if ($pid) {
     # parent
-    local $SIG{INT} = sub { kill 2, $pid; };
-    local $SIG{TERM} = sub { kill 15, $pid; };
-    local $SIG{ALRM} = sub { kill 15, $pid; sleep 1; kill 9, $pid; exit 98; };
+    local $SIG{INT} = sub { kill 2, -$pid; };
+    local $SIG{TERM} = sub { kill 15, -$pid; };
+    local $SIG{ALRM} = sub { kill 15, -$pid; sleep 1; kill 9, -$pid; exit 98; };
     alarm $maxtime;
     my $newpid = waitpid($pid, 0);
     if ($newpid != $pid) {
@@ -24,6 +24,7 @@ if ($pid) {
     exit $? >> 8;
 } else {
     # child
+    setpgrp(0,0);
     exec(@ARGV);
 }
 
