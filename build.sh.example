@@ -18,7 +18,11 @@ autoconf || true
 # Actually build the project
 make || exit 3
 
-# If applicable, maybe you want to run your project's unit tests.
-#make test || exit 4
+# Only run the unit tests if the 'make test' target exists.  Make will
+# return 1 if a target exists but isn't up-to-date, or 2 on error.
+make -q tests
+if [ "$?" = 1 ]; then
+	make test || exit 4
+fi
 
 exit 0
