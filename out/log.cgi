@@ -56,7 +56,7 @@ while (defined(my $s = <$fh>))
     	    print end_ul;
     	    $in = 0;
     	}
-    } elsif ($s =~ /^Project ".*"/ || $s =~ /^---/) {
+    } elsif ($s =~ /^Project ".*"/ || $s =~ /^---/ || $s =~ /^-->/) {
     	$class = "msbuild";
     	if ($in) {
     	    print end_ul;
