@@ -9,19 +9,16 @@
 # You might want to run ./configure here, make, make test, etc.
 #
 
-# Use this so that our script aborts immediately when any of the commands
-# fail.  If we don't do this, gitbuilder might not notice our compile errors!
-set -e
-
 # Don't forget to run autoconf and ./configure, if that's what your project
 # needs.
-[ ! -x autogen.sh ] || ./autogen.sh
+[ ! -x autogen.sh ] || ./autogen.sh || exit 1
 autoconf || true
-[ ! -x configure ] || ./configure
+[ ! -x configure ] || ./configure || exit 2
 
 # Actually build the project
-make
+make || exit 3
 
 # If applicable, maybe you want to run your project's unit tests.
-#make test
+#make test || exit 4
 
+exit 0
