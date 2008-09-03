@@ -155,4 +155,5 @@ for my $branch (list_branches()) {
 }
 
 print end_table();
+print end_html;
 exit 0;
