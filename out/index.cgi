@@ -77,6 +77,10 @@ print header, start_html(
 print Link({-rel=>"alternate", -title=>"Autobuilder results",
 	-href=>"rss.cgi", -type=>"application/rss+xml"});
 
+print div({-class=>"logo"}, "compiled by ",
+    a({-href=>"http://github.com/apenwarr/gitbuilder/"},
+      "<b>git</b>builder"));
+
 print h1("Autobuilder results");
 
 print start_table();
