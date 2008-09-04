@@ -81,7 +81,10 @@ print div({-class=>"logo"}, "compiled by ",
     a({-href=>"http://github.com/apenwarr/gitbuilder/"},
       "<b>git</b>builder"));
 
-print h1("Autobuilder results");
+print h1("Autobuilder results", 
+    a({-href=>"rss.cgi",-title=>"Subscribe via RSS"},
+      img({-src=>"feed-icon-28x28.png",-alt=>"[RSS]"})),
+);
 
 print start_table();
 print Tr(th("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
