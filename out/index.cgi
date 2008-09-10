@@ -143,9 +143,9 @@ for my $branch (list_branches()) {
 	}
 	    
 	do_pending_dots();
-    
-	my $codestr = ($failed ? "Errors" : 
-	    (find_errors($filename) ? "Warnings" : "ok"));
+	
+	my ($warnmsg, $errs) = find_errors($filename);
+	my $codestr = ($failed ? "Errors" : $warnmsg);
 	print Tr(td($branchprint),
 	    td({bgcolor=>($failed ? "#ff6666" : "#66ff66")},
 		$failed ? b("FAIL") : "ok"),

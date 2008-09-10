@@ -11,28 +11,48 @@ sub find_errors($)
 {
 	my $filename = shift;
 	my $out = "";
+    	my $warnings = 0;
+    	my $testsfailed = 0;
 	my @tail = ();
 	
 	open my $fh, "<$filename"
 		or die("Can't open $filename: $!\n");
 	while (defined(my $s = <$fh>)) {
+	    	chomp $s;
 		if ($s =~ /\s*(hint|warning|error|fatal)\s*:\s*(.*)/i) {
-			$out .= "$1: $2\n\n";
+			$out .= "$1: $2<br>\n";
+		    	$warnings++;
+		} elsif ($s =~ /^!\s*(.*?)\s+(\S+)\s*$/) {
+		        if ($2 ne "ok") {
+			        $out .= "! $1   <b>$2</b><br>\n";
+			        $testsfailed++;
+                        }
 		}
-		push @tail, $s;
+		push @tail, "$s<br>\n";
 		if (@tail > 25) {
 		    shift @tail;
 		}
 	}
 	close $fh;
-	$err_tail = "\n\nLast messages:\n\n@tail\n";
-	return $out;
+	$err_tail = "<p>\n\n<b>Last messages:</b><p>\n\n@tail\n";
+        my @msg = ();
+    	if ($warnings) {
+	    	push @msg, "Warnings";
+	}
+    	if ($testsfailed) {
+	    	push @msg, "Failures";
+	}
+    	if (!@msg) {
+	    	push @msg, "ok";
+	}
+	return join("/", @msg), $out;
 }
 
 sub squish_log($)
 {
 	my $filename = shift;
-        return find_errors($filename) . $err_tail;
+	my ($msg, $out) = find_errors($filename);
+        return $out . $err_tail;
 }
 
 sub mtime($)
