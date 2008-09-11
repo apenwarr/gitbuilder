@@ -30,6 +30,8 @@ for my $path (sort { mtime($b) cmp mtime($a) } @all) {
     last if ++$i > 20;
     my $commit = basename($path);
     my $name = git_describe($commit);
+    $name =~ s{^remotes/}{};
+    $name =~ s{^origin/}{};
     
     my $filename;
     my $failed;
@@ -58,7 +60,7 @@ for my $path (sort { mtime($b) cmp mtime($a) } @all) {
     
     print qq{
 	<item>
-	  <title>$codestr $name</title>
+	  <title>$codestr: $name</title>
 	  <pubDate>$date</pubDate>
 	  <link>$url/$logcgi</link>
 	  <guid isPermaLink='true'>$url/$logcgi#$mtime</guid>
