@@ -8,7 +8,8 @@ my $commit = param('log');
 $commit =~ s/[^0-9A-Za-z]/_/g;
 $commit =~ s/^\./_/;
 
-print header, start_html(
+print header(-type => 'text/html; charset=utf-8'),
+      start_html(
 	-title => "$commit - Autobuilder log",
 	-style => {-src => "log.css"}
 );

@@ -83,7 +83,8 @@ sub list_branches()
 }
 
 
-print header, start_html(
+print header(-type => 'text/html; charset=utf-8'),
+      start_html(
 	-title => "Autobuilder results",
 	-style => {-src => "index.css"}
 );
