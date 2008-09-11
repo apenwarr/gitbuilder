@@ -2,23 +2,33 @@ package Autobuilder;
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(find_errors squish_log mtime catfile basename stripwhite 
-    shorten git_describe gitweb_url commitlink);
+    shorten git_describe project_name gitweb_url commitlink);
 
 use strict;
+
+sub _cat_line($)
+{
+    my $filename = shift;
+    if (-r $filename) {
+        my $s = catfile($filename);
+        $s =~ s/^\s*//;
+        $s =~ s/\s*$//;
+        return $s;
+    }
+    return undef;
+}
+
+sub project_name()
+{
+        return _cat_line('project-name');
+}
 
 my $gitweb_url;
 sub gitweb_url()
 {
-        if (!defined($gitweb_url) && -r '../gitweb-url') {
-            $gitweb_url = catfile('../gitweb-url');
-            $gitweb_url =~ s/^\s*//;
-            $gitweb_url =~ s/\s*$//;
-        }
-        if (!$gitweb_url) {
-            $gitweb_url = undef;
-        }
         return $gitweb_url;
 }
+$gitweb_url = _cat_line('gitweb-url');
 
 sub commitlink($$)
 {

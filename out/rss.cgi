@@ -13,10 +13,18 @@ $url =~ s{/$relative$}{};
 print "Content-Type: text/xml\n";
 print "\n";
 
+my $title = "Autobuilder";
+my $project_name = project_name();
+if ($project_name) {
+    # use the shortest name possible because some RSS readers don't leave much
+    # room for the name.  Also make sure the critical text comes at the start.
+    $title = "$project_name Builder";
+}
+
 print qq{<rss version='2.0' xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
-		<title>Autobuilder results</title>
-		<description>Autobuilder results</description>
+		<title>$title</title>
+		<description>Autobuilder results via gitbuilder</description>
 		<link>$url</link>
 		<atom:link href="$url/rss.cgi" rel="self" type="application/rss+xml" />
 		<language>en-ca</language>

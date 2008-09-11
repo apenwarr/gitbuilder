@@ -82,21 +82,26 @@ sub list_branches()
     return @out;
 }
 
+my $title = "Autobuilder results";
+my $project_name = project_name();
+if ($project_name) {
+    $title .= " for $project_name";
+}
 
 print header(-type => 'text/html; charset=utf-8'),
       start_html(
-	-title => "Autobuilder results",
+	-title => $title,
 	-style => {-src => "index.css"}
 );
 
-print Link({-rel=>"alternate", -title=>"Autobuilder results",
+print Link({-rel=>"alternate", -title=>$title,
 	-href=>"rss.cgi", -type=>"application/rss+xml"});
 
 print div({-class=>"logo"}, "compiled by ",
     a({-href=>"http://github.com/apenwarr/gitbuilder/"},
       "<b>git</b>builder"));
 
-print h1("Autobuilder results", 
+print h1($title,
     a({-href=>"rss.cgi",-title=>"Subscribe via RSS"},
       img({-src=>"feed-icon-28x28.png",-alt=>"[RSS]"})),
 );
