@@ -71,9 +71,9 @@ while (defined(my $s = <$fh>))
     	print start_ul;
     	$in = 1;
     	next;
-    } elsif ($s =~ /(hint|warning|error|fatal)\s*:\s*(.*)/i) {
-    	$class = lc $1;
-    	$s = ul("$1: $2");
+    } elsif ($s =~ /^\s*(\S*)\s*(hint|warning|error|fatal)\s*:\s*(.*)/i) {
+    	$class = lc $2;
+    	$s = ul("$2: $1 $3");
     } elsif ($s =~ /^!\s*(.*?)\s+(\S+)\s*$/ && $2 ne "ok") {
         $class = 'error';
     }

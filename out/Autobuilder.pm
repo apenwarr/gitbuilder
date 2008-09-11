@@ -19,8 +19,8 @@ sub find_errors($)
 		or die("Can't open $filename: $!\n");
 	while (defined(my $s = <$fh>)) {
 	    	chomp $s;
-		if ($s =~ /\s*(hint|warning|error|fatal)\s*:\s*(.*)/i) {
-			$out .= "$1: $2<br>\n";
+		if ($s =~ /^\s*(\S*)\s*(hint|warning|error|fatal)\s*:\s*(.*)/i) {
+			$out .= "$2: $1 $3<br>\n";
 		    	$warnings++;
 		} elsif ($s =~ /^!\s*(.*?)\s+(\S+)\s*$/) {
 		        if ($2 ne "ok") {
