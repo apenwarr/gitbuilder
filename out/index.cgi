@@ -88,7 +88,7 @@ print h1("Autobuilder results",
 
 print start_table();
 print Tr(th("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
-    th("Result"), th("Commit"), th("Details"));
+    th("Result"), th("Commit"), th("Who"), th("Details"));
 
 for my $branch (list_branches()) {
     my $branchprint = $branch;
@@ -102,18 +102,19 @@ for my $branch (list_branches()) {
 	    $last_was_pending -= $print_pending;
 	    $print_pending = 0;
 	    print Tr(td($branchprint),
-		td("...$last_was_pending..."), td(""), td(""));
+		td("...$last_was_pending..."), td(""), td(""), td(""));
 	    $branchprint = "";
 	}
 	$last_was_pending = 0;
     }
     
     foreach my $rev (revs_for_branch($branch)) {
-	my ($commit, $comment) = split(" ", $rev, 2);
+	my ($commit, $email, $comment) = split(" ", $rev, 3);
 	
 	my $filename;
 	my $failed;
 	my $logcgi = "log.cgi?log=$commit";
+	$email =~ s/\@.*//;
 	
 	if (-f "pass/$commit") {
 	    $filename = "pass/$commit";
@@ -126,6 +127,7 @@ for my $branch (list_branches()) {
 	    print Tr(td($branchprint),
 		td({bgcolor=>'#ffff66'}, "BUILDING"),
 		td(shorten($commit, 7)),
+		td($email),
 		td($comment));
 	    $branchprint = "";
 	    next;
@@ -133,6 +135,7 @@ for my $branch (list_branches()) {
 	    print Tr(td($branchprint),
 		td("(Pending)"),
 		td(shorten($commit, 7)),
+		td($email),
 		td($comment));
 	    $last_was_pending = 1;
 	    $branchprint = "";
@@ -150,6 +153,7 @@ for my $branch (list_branches()) {
 	    td({bgcolor=>($failed ? "#ff6666" : "#66ff66")},
 		$failed ? b("FAIL") : "ok"),
 	    td(shorten($commit, 7)),
+	    td($email),
 	    td(a({-href=>$logcgi}, "$codestr") . " $comment"));
 	$branchprint = "";
     }
@@ -157,7 +161,7 @@ for my $branch (list_branches()) {
     do_pending_dots();
     
     if (!$branchprint) {
-	print Tr(td({colspan=>4}, hr));
+	print Tr(td({colspan=>5}, hr));
     }
 }
 

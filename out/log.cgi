@@ -56,7 +56,8 @@ while (defined(my $s = <$fh>))
     	    print end_ul;
     	    $in = 0;
     	}
-    } elsif ($s =~ /^Project ".*"/ || $s =~ /^---/ || $s =~ /^-->/) {
+    } elsif ($s =~ /^Project ".*"/ || $s =~ /^---/ || $s =~ /^-->/
+              || $s =~ /^Testing ".*" in .*:\s*/) {
     	$class = "msbuild";
     	if ($in) {
     	    print end_ul;
@@ -72,6 +73,8 @@ while (defined(my $s = <$fh>))
     } elsif ($s =~ /(hint|warning|error|fatal)\s*:\s*(.*)/i) {
     	$class = lc $1;
     	$s = ul("$1: $2");
+    } elsif ($s =~ /^!\s*(.*?)\s+(\S+)\s*$/ && $2 ne "ok") {
+        $class = 'error';
     }
     
     print div({-class=>$class}, $s);
