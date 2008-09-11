@@ -16,7 +16,8 @@ print header(-type => 'text/html; charset=utf-8'),
 
 print div({-style=>'float: right'}, a({-href=>"."}, "<< index"));
 my $name = git_describe($commit);
-print h1("Autobuilder log for <b><u>$name</u></b> ($commit):");
+my $commitlink = commitlink($commit, $commit);
+print h1("Autobuilder log for <b><u>$name</u></b> ($commitlink):");
 
 my $fn;
 if (-f "pass/$commit") {

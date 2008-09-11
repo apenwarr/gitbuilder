@@ -132,6 +132,7 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 	my $failed;
 	my $logcgi = "log.cgi?log=$commit";
 	$email =~ s/\@.*//;
+	my $commitlink = commitlink($commit, shorten($commit, 7, ""));
 	
 	if (-f "pass/$commit") {
 	    $filename = "pass/$commit";
@@ -143,7 +144,7 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 	    do_pending_dots();
 	    print Tr(td($branchprint),
 		td({bgcolor=>'#ffff66'}, "BUILDING"),
-		td(shorten($commit, 7)),
+		td($commitlink),
 		td($email),
 		td($comment));
 	    $branchprint = "";
@@ -151,7 +152,7 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 	} elsif ($last_was_pending == 0 && $print_pending) {
 	    print Tr(td($branchprint),
 		td("(Pending)"),
-		td(shorten($commit, 7)),
+		td($commitlink),
 		td($email),
 		td($comment));
 	    $last_was_pending = 1;
@@ -169,7 +170,7 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 	print Tr(td($branchprint),
 	    td({bgcolor=>($failed ? "#ff6666" : "#66ff66")},
 		$failed ? b("FAIL") : "ok"),
-	    td(shorten($commit, 7)),
+	    td($commitlink),
 	    td($email),
 	    td(a({-href=>$logcgi}, "$codestr") . " $comment"));
 	$branchprint = "";

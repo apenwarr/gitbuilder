@@ -2,9 +2,35 @@ package Autobuilder;
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(find_errors squish_log mtime catfile basename stripwhite 
-    shorten git_describe);
+    shorten git_describe gitweb_url commitlink);
 
 use strict;
+
+my $gitweb_url;
+sub gitweb_url()
+{
+        if (!defined($gitweb_url) && -r '../gitweb-url') {
+            $gitweb_url = catfile('../gitweb-url');
+            $gitweb_url =~ s/^\s*//;
+            $gitweb_url =~ s/\s*$//;
+        }
+        if (!$gitweb_url) {
+            $gitweb_url = undef;
+        }
+        return $gitweb_url;
+}
+
+sub commitlink($$)
+{
+        my ($commit, $text) = @_;
+	my $gitweb_url = gitweb_url();
+	if ($gitweb_url) {
+	    return "<a href=\"$gitweb_url&h=$commit\">"
+	        . $text
+	        . "</a>";
+	}
+	return $text;
+}
 
 my $err_tail = "";
 sub find_errors($)
@@ -90,11 +116,14 @@ sub stripwhite($)
 	return $s;
 }
 
-sub shorten($$)
+sub shorten($$@)
 {
-	my ($s, $len) = @_;
+	my ($s, $len, $suffix) = @_;
+	if (!defined($suffix)) {
+	    $suffix = "...";
+	}
 	if (length($s) > $len) {
-		return substr($s, 0, $len) . "...";
+		return substr($s, 0, $len) . $suffix;
 	} else {
 		return $s;
 	}
