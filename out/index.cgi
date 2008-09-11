@@ -60,7 +60,7 @@ sub revs_for_branch($)
     }
 }
 
-sub list_branches()
+sub _list_branches()
 {
     if (-x '../branches.sh') {
 	return run_cmd("../branches.sh");
@@ -68,6 +68,20 @@ sub list_branches()
 	return @branches;
     }
 }
+
+
+sub list_branches()
+{
+    my @out = ();
+    foreach my $branch (_list_branches())
+    {
+        my $branchword = $branch;
+        $branchword =~ s{^.*/}{};
+        push @out, "$branchword $branch";
+    }
+    return @out;
+}
+
 
 print header, start_html(
 	-title => "Autobuilder results",
@@ -90,8 +104,10 @@ print start_table();
 print Tr(th("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
     th("Result"), th("Commit"), th("Who"), th("Details"));
 
-for my $branch (list_branches()) {
+for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
+    my ($branchword, $branch) = split(" ", $bpb, 2);
     my $branchprint = $branch;
+    $branchprint =~ s{^origin/}{};
 
     our $last_was_pending = 0;
     our $print_pending = 1;
