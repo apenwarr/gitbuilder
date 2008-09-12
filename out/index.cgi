@@ -106,10 +106,18 @@ print h1($title,
       img({-src=>"feed-icon-28x28.png",-alt=>"[RSS]"})),
 );
 
-print start_table();
-print Tr(th("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
-    th("Result"), th("Commit"), th("Who"), th("Details"));
+print start_table({class=>"results",align=>"center"});
+print Tr({class=>"resultheader"},
+    #th("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
+    th("Branch"),
+    th("Status"), th("Commit"), th("Who"), th("Result"), th(""));
+    
+sub spacer()
+{
+    return Tr({class=>"spacer"}, td({colspan=>6}, ""));
+}
 
+my $last_ended_in_spacer = 0;
 for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
     my ($branchword, $branch) = split(" ", $bpb, 2);
     my $branchprint = $branch;
@@ -118,12 +126,15 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
     our $last_was_pending = 0;
     our $print_pending = 1;
     
+    my @branchout = ();
+    
     sub do_pending_dots()
     {
 	if ($last_was_pending > $print_pending) {
 	    $last_was_pending -= $print_pending;
 	    $print_pending = 0;
-	    print Tr(td($branchprint),
+	    push @branchout, Tr(
+	        td($branchprint),
 		td("...$last_was_pending..."), td(""), td(""), td(""));
 	    $branchprint = "";
 	}
@@ -139,15 +150,22 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 	$email =~ s/\@.*//;
 	my $commitlink = commitlink($commit, shorten($commit, 7, ""));
 	
+	# The comment is overkill
+	$comment = "";
+	
 	if (-f "pass/$commit") {
 	    $filename = "pass/$commit";
 	    $failed = 0;
+	    # fall through
 	} elsif (-f "fail/$commit") {
 	    $filename = "fail/$commit";
 	    $failed = 1;
+	    # fall through
 	} elsif ($commit eq $currently_doing) {
+	    # currently building this one
 	    do_pending_dots();
-	    print Tr(td($branchprint),
+	    push @branchout, Tr(
+	        td($branchprint),
 		td({bgcolor=>'#ffff66'}, "BUILDING"),
 		td($commitlink),
 		td($email),
@@ -155,7 +173,9 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 	    $branchprint = "";
 	    next;
 	} elsif ($last_was_pending == 0 && $print_pending) {
-	    print Tr(td($branchprint),
+	    # first pending in a group: print (Pending)
+	    push @branchout, Tr(
+	        td($branchprint),
 		td("(Pending)"),
 		td($commitlink),
 		td($email),
@@ -164,6 +184,7 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 	    $branchprint = "";
 	    next;
 	} else {
+	    # no info yet: just count, don't print
 	    $last_was_pending++;
 	    next;
 	}
@@ -172,19 +193,30 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 	
 	my ($warnmsg, $errs) = find_errors($filename);
 	my $codestr = ($failed ? "Errors" : $warnmsg);
-	print Tr(td($branchprint),
+        push @branchout, Tr({class=>"result", 
+                             onclick=>"location.href='$logcgi'"},
+	    td($branchprint),
 	    td({bgcolor=>($failed ? "#ff6666" : "#66ff66")},
 		$failed ? b("FAIL") : "ok"),
 	    td($commitlink),
 	    td($email),
-	    td(a({-href=>$logcgi}, "$codestr") . " $comment"));
+	    td($codestr . " $comment"),
+	    td({class=>"loglink"},
+	         "(".a({-href=>$logcgi}, "Click to view log").")"));
 	$branchprint = "";
     }
     
     do_pending_dots();
     
-    if (!$branchprint) {
-	print Tr(td({colspan=>5}, hr));
+    if (@branchout > 1) {
+        if (!$last_ended_in_spacer) {
+            print spacer;
+        }
+        print @branchout, spacer;
+        $last_ended_in_spacer = 1;
+    } else {
+        print @branchout;
+        $last_ended_in_spacer = 0;
     }
 }
 

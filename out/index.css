@@ -1,12 +1,45 @@
 
-th {
+table.results th {
 	padding-right: 0.5em;
 	padding-left: 0.5em;
+	text-align: left;
+	text-decoration: underline;
+	padding-bottom: 0.5em;
 }
 
 td {
 	padding-right: 0.5em;
 	padding-left: 0.5em;
+}
+
+tr.result {
+}
+
+tr.result:hover {
+	background: #cccccc;
+}
+
+table.results a {
+	text-decoration: none;
+}
+
+table.results a:hover {
+	text-decoration: underline;
+}
+
+table.results td.loglink {
+	background: white;
+	visibility: hidden;
+	white-space: nowrap;
+	font-size: smaller;
+}
+
+table.results tr:hover td.loglink {
+	visibility: visible;
+}
+
+tr.spacer td {
+	padding: 0.5em;
 }
 
 body {
@@ -35,3 +68,4 @@ div.logo a {
 img {
 	border: 0px;
 }
+
