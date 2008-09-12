@@ -3,7 +3,8 @@ table.results th {
 	padding-right: 0.5em;
 	padding-left: 0.5em;
 	text-align: left;
-	text-decoration: underline;
+	font-weight: bold;
+	color: #666666;
 	padding-bottom: 0.5em;
 }
 
@@ -36,6 +37,37 @@ table.results td.loglink {
 
 table.results tr:hover td.loglink {
 	visibility: visible;
+}
+
+table.results td.details {
+	padding-left: 2em;
+	text-indent: -2em;
+}
+
+td.branch {
+	color: #666666;
+	text-align: right;
+}
+td.branch b {
+	color: black;
+	font-weight: normal;
+}
+
+td.committer {
+	color: #666666;
+}
+td.commit a {
+	color: #5555ff;
+}
+
+span.codestr {
+	color: black;
+	xfont-weight: bold;
+}
+
+span.comment {
+	color: #666666;
+	font-size: small;
 }
 
 tr.spacer td {
