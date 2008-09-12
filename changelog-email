@@ -1,0 +1,31 @@
+#!/bin/bash
+DIR=$(dirname $0)
+cd "$DIR" || exit 5
+
+
+EMAIL=$(git var GIT_AUTHOR_IDENT | sed 's/^.*<\(.*\)>.*$/\1/')
+if [ -r out/changelog-email-from ]; then
+	EMAIL=$(cat out/changelog-email-from)
+fi
+
+PROJ=Git
+if [ -r out/project-name ]; then
+	PROJ=$(cat out/project-name)
+fi
+
+DATE=$(date +%Y-%m-%d)
+
+cat <<-EOF
+	From: ChangeLog Script <$EMAIL>
+	To: (undisclosed recipients);
+	Subject: Changes in $PROJ for $DATE
+	Content-Type: text/html
+	Precedence: bulk
+	Importance: low
+	X-This-Is-Git-Changelog: yes
+	List-id: <git-changelog-script>
+	
+EOF
+
+cd out || exit 6
+exec ./changelog.pl "$@"

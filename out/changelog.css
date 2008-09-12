@@ -1,0 +1,57 @@
+body {
+    font-family: verdana, sans-serif;
+}
+
+div.listings {
+    display: block;
+    padding: 0px;
+}
+
+.listings div {
+    display: block;
+    margin: 0pt 0pt 20pt 0pt;
+    padding: 0pt;
+}
+
+.listings .svtitle {
+    font-weight: bold;
+    display: inline;
+}
+
+.listings .svtitle b {
+    text-decoration: underline;
+}
+
+.listings .svdate {
+    color: #666666;
+    margin: 0pt 0pt 0pt 10pt;
+    padding: 0pt;
+    display: inline;
+}
+
+.listings ul {
+    margin: 0pt 0pt 0pt 20pt;
+    padding: 0pt 0pt 0pt 0pt;
+}
+
+.listings .svcommentary {
+    display: block;
+    color: #666666;
+    font-family: andale mono, verdana, sans-serif;
+    font-size: smaller;
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 0pt 0pt 5pt 0pt;
+}
+
+.listings .svcommentary p {
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 0pt 0pt 0pt 0pt;
+}
+
+.listings .svtext {
+    display: block;
+}
+
+.listings p_title {
+    font-weight: bold;
+}
