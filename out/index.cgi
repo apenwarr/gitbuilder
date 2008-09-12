@@ -130,12 +130,13 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
     
     my @branchout = ();
     
-    sub do_pending_dots()
+    sub do_pending_dots(\@)
     {
+        my $_branchout = shift;
 	if ($last_was_pending > $print_pending) {
 	    $last_was_pending -= $print_pending;
 	    $print_pending = 0;
-	    push @branchout, Tr(
+	    push @{$_branchout}, Tr(
 	        td($branchprint),
 		td("...$last_was_pending..."), td(""), td(""), td(""));
 	    $branchprint = "";
@@ -153,9 +154,9 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 	my $commitlink = commitlink($commit, shorten($commit, 7, ""));
 	$comment =~ s/^\s*-?\s*//;
 	
-        sub pushrow($$$$$$)
+        sub pushrow(\@$$$$$$)
         {
-            my ($status, $commitlink,
+            my ($_branchout, $status, $commitlink,
                 $email, $codestr, $comment, $logcgi) = @_;
                 
             my $bgcolor;
@@ -170,8 +171,8 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
                 $bgcolor = "#ffcccc";
             }
             
-            do_pending_dots();
-            my $ret =
+            do_pending_dots(@{$_branchout});
+            push @{$_branchout},
                 Tr({class=>"result", onclick=>"location.href='$logcgi'"},
                     td({class=>"branch"}, $branchprint),
                     td({bgcolor=>$bgcolor}, $status),
@@ -186,7 +187,6 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
                         : ""
                     );
             $branchprint = "";
-            return $ret;
         }
         
 	if (-f "pass/$commit") {
@@ -199,12 +199,12 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 	    # fall through
 	} elsif ($commit eq $currently_doing) {
 	    # currently building this one
-	    push @branchout, pushrow("BUILDING", 
+	    pushrow(@branchout, "BUILDING", 
 	            $commitlink, $email, "", $comment, "");
 	    next;
 	} elsif ($last_was_pending == 0 && $print_pending) {
 	    # first pending in a group: print (Pending)
-	    push @branchout, pushrow("(Pending)",
+	    pushrow(@branchout, "(Pending)",
 	            $commitlink, $email, "", $comment, "");
 	    $last_was_pending = 1;
 	    next;
@@ -216,11 +216,11 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 	    
 	my ($warnmsg, $errs) = find_errors($filename);
 	my $codestr = ($failed ? "Errors" : $warnmsg);
-	push @branchout, pushrow($failed ? b("FAIL") : "ok",
+	pushrow(@branchout, $failed ? b("FAIL") : "ok",
                 $commitlink, $email, $codestr, $comment, $logcgi);
     }
     
-    do_pending_dots();
+    do_pending_dots(@branchout);
     
     if (@branchout > 1) {
         if (!$last_ended_in_spacer) {
