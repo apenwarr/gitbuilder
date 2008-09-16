@@ -86,7 +86,7 @@ sub revdetail($)
 	    
 	    my @tm = localtime($ticks);
 	    $date = sprintf("%04d-%02d-%02d %02d:%02d:%02d",
-		1900+$tm[5], $tm[4], $tm[3], 
+		1900+$tm[5], $tm[4]+1, $tm[3], 
 		$tm[2], $tm[1], $tm[0]);
 	} elsif ($line =~ /^$/) {
 	    $inlog = 1;
@@ -169,7 +169,7 @@ my $style = catfile("changelog.css");
 my $projname = project_name() || "Git project";
 my @ltm = localtime();
 my $title = sprintf("%s changes for %04d-%02d-%02d", $projname,
-    $ltm[5]+1900, $ltm[4], $ltm[3]);
+    $ltm[5]+1900, $ltm[4]+1, $ltm[3]);
 print qq{<html>
       <head>
       <style type="text/css">
