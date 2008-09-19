@@ -75,8 +75,8 @@ while (defined(my $s = <$fh>))
     } elsif ($s =~ /^\s*(\S*)\s*(hint|warning|error|fatal)\s*:\s*(.*)/i) {
     	$class = lc $2;
     	$s = ul("$2: $1 $3");
-    } elsif ($s =~ /^!\s*(.*?)\s+(\S+)\s*$/ && $2 ne "ok") {
-        $class = 'error';
+    } elsif ($s =~ /^!\s*(.*?)\s+(\S+)\s*$/) {
+        $class = ($2 ne "ok") ? 'error' : 'buildscript';
     }
     
     print div({-class=>$class}, $s);
