@@ -113,6 +113,9 @@ sub revformat(@)
     
     my $commitlink = commitlink($rev, shorten($rev, 7, ""));
     my $filenames = join('<br>', sort @filenames);
+    if ($filenames) {
+        $filenames .= "<p>";
+    }
     push @out, qq{
 	<div>
 	  <span class='svtitle'>$commitlink by <b>$who</b></span>
@@ -217,7 +220,7 @@ foreach my $branch (@branches)
 	    </div>
 	};
     } else {
-	foreach my $rev (@revs) {
+	foreach my $rev (reverse @revs) {
 	    push @log, revformat(revdetail($rev));
 	}
     }
