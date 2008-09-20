@@ -2,7 +2,7 @@ package Autobuilder;
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(find_errors squish_log mtime catfile basename stripwhite 
-    shorten git_describe project_name gitweb_url commitlink);
+    shorten git_describe project_name gitweb_url autobuilder_url commitlink);
 
 use strict;
 
@@ -29,6 +29,14 @@ sub gitweb_url()
         return $gitweb_url;
 }
 $gitweb_url = _cat_line('gitweb-url');
+
+my $autobuilder_url;
+sub autobuilder_url()
+{
+        return $autobuilder_url;
+}
+$autobuilder_url = _cat_line('autobuilder-url')
+    and $autobuilder_url =~ s{/$}{};
 
 sub commitlink($$)
 {
