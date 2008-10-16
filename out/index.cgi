@@ -212,9 +212,8 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 	}
 	    
 	my ($warnmsg, $errs) = find_errors($filename);
-	my $codestr = ($failed ? "Errors" : $warnmsg);
 	pushrow(@branchout, $failed ? b("FAIL") : "ok",
-                $commitlink, $email, $codestr, $comment, $logcgi);
+                $commitlink, $email, $warnmsg, $comment, $logcgi);
     }
     
     do_pending_dots(@branchout);

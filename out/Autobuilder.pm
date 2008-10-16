@@ -56,14 +56,28 @@ sub find_errors($)
 	my $filename = shift;
 	my $out = "";
     	my $warnings = 0;
+        my $errors = 0;
     	my $testsfailed = 0;
+        my $overallfail = 0;
 	my @tail = ();
+    
+        if ($filename =~ m{fail/}) {
+	    $overallfail = 1;
+	}
 	
 	open my $fh, "<$filename"
 		or die("Can't open $filename: $!\n");
 	while (defined(my $s = <$fh>)) {
 	    	chomp $s;
 		if ($s =~ /^\s*(\S*)\s*(hint|warning|error|fatal)\s*:\s*(.*)/i) {
+		        my $type = $2;
+			$out .= "type: $1 $3<br>\n";
+		        if ($type =~ /(error|fatal)/i) {
+			    $errors++;
+			} else {
+			    $warnings++;
+			}
+		} elsif ($s =~ /^\s*(\S*)\s*(hint|warning)\s*:\s*(.*)/i) {
 			$out .= "$2: $1 $3<br>\n";
 		    	$warnings++;
 		} elsif ($s =~ /^!\s*(.*?)\s+(\S+)\s*$/) {
@@ -82,6 +96,9 @@ sub find_errors($)
         my @msg = ();
     	if ($warnings) {
 	    	push @msg, "Warnings";
+	}
+    	if ($errors || ($overallfail && !$testsfailed)) {
+	    	push @msg, "Errors";
 	}
     	if ($testsfailed) {
 	    	push @msg, "Failures";

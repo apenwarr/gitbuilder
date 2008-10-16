@@ -55,11 +55,13 @@ for my $path (sort { mtime($b) cmp mtime($a) } @all) {
     }
     
     my ($warnmsg, $errs) = find_errors($filename);
+    my $codestr = $warnmsg;
+    $codestr =~ s/([A-Z])[a-z]*/$1/g;
+    
     my $longstr = "$commit\n\n" . squish_log($filename);
     $longstr =~ s/\&/\&amp;/g;
     $longstr =~ s/</&lt;/g;
     
-    my $codestr = ($failed ? "ERRORS" : $warnmsg);
     my $logcgi = "log.cgi?log=$commit";
     
     my $mtime = mtime($filename);
@@ -72,7 +74,7 @@ for my $path (sort { mtime($b) cmp mtime($a) } @all) {
 	  <pubDate>$date</pubDate>
 	  <link>$url/$logcgi</link>
 	  <guid isPermaLink='true'>$url/$logcgi#$mtime</guid>
-	  <description>$codestr\n\n$longstr</description>
+	  <description>$warnmsg\n\n$longstr</description>
 	</item>
     };
 }
