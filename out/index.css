@@ -16,10 +16,6 @@ td {
 tr.result {
 }
 
-tr.result:hover {
-	background: #cccccc;
-}
-
 table.results a {
 	text-decoration: none;
 }
@@ -33,10 +29,6 @@ table.results td.loglink {
 	visibility: hidden;
 	white-space: nowrap;
 	font-size: smaller;
-}
-
-table.results tr:hover td.loglink {
-	visibility: visible;
 }
 
 table.results td.details {
@@ -55,9 +47,6 @@ td.branch b {
 
 td.committer {
 	color: #666666;
-}
-td.commit a {
-	color: #5555ff;
 }
 
 span.codestr {

@@ -173,18 +173,15 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
             
             do_pending_dots(@{$_branchout});
             push @{$_branchout},
-                Tr({class=>"result", onclick=>"location.href='$logcgi'"},
+                Tr({class=>"result"},
                     td({class=>"branch"}, $branchprint),
                     td({bgcolor=>$bgcolor}, $status),
                     td({class=>"commit"}, $commitlink),
                     td({class=>"committer"}, $email),
-                    td({class=>"details"}, 
-                        span({class=>"codestr"}, "$codestr"),
-	                span({class=>"comment"}, $comment)),
-                    $logcgi 
-                        ? td({class=>"loglink"},
-                            "(".a({-href=>$logcgi}, "Click to view log").")")
-                        : ""
+                    td({class=>"details"},
+                        span({class=>"codestr"},
+                          $logcgi ? a({-href=>$logcgi}, $codestr) : $codestr),
+                        span({class=>"comment"}, $comment))
                     );
             $branchprint = "";
         }
