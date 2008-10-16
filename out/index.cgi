@@ -138,7 +138,8 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 	    $print_pending = 0;
 	    push @{$_branchout}, Tr(
 	        td($branchprint),
-		td("...$last_was_pending..."), td(""), td(""), td(""));
+		td({class=>"status"}, "...$last_was_pending..."),
+		td(""), td(""), td(""));
 	    $branchprint = "";
 	}
 	$last_was_pending = 0;
@@ -159,23 +160,25 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
             my ($_branchout, $status, $commitlink,
                 $email, $codestr, $comment, $logcgi) = @_;
                 
-            my $bgcolor;
+            my $statcode;
             if ($status eq "ok") {
-                $bgcolor = "#ccffcc";
+                $statcode = "ok";
             } elsif ($status eq "BUILDING") {
-                $bgcolor = "#ffffcc";
+                $statcode = "pending";
             } elsif ($status eq "(Pending)") {
-                $bgcolor = "white";
+                $statcode = "pending";
+            } elsif ($status =~ /^W/) {
+                $statcode = "warn";
             } else {
                 # some kind of FAIL marker by default
-                $bgcolor = "#ffcccc";
+                $statcode = "err";
             }
             
             do_pending_dots(@{$_branchout});
             push @{$_branchout},
                 Tr({class=>"result"},
                     td({class=>"branch"}, $branchprint),
-                    td({bgcolor=>$bgcolor}, $status),
+                    td({class=>"status status-$statcode"}, $status),
                     td({class=>"commit"}, $commitlink),
                     td({class=>"committer"}, $email),
                     td({class=>"details"},
@@ -212,7 +215,9 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 	}
 	    
 	my ($warnmsg, $errs) = find_errors($filename);
-	pushrow(@branchout, $failed ? b("FAIL") : "ok",
+	my $status = ($warnmsg eq "ok") ? "ok" 
+	    : ($warnmsg eq "Warnings") ? "Warn" : "FAIL";
+	pushrow(@branchout, $status,
                 $commitlink, $email, $warnmsg, $comment, $logcgi);
     }
     

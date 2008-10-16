@@ -45,6 +45,21 @@ td.branch b {
 	font-weight: normal;
 }
 
+td.status {
+	text-align: center;
+}
+td.status-ok {
+	background: #ccffcc;
+}
+td.status-warn {
+	font-weight: bold;
+	background: #ffffcc;
+}
+td.status-err {
+	font-weight: bold;
+	background: #ffcccc;
+}
+
 td.committer {
 	color: #666666;
 }
