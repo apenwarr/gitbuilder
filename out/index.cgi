@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
-use CGI qw/:standard *table start_ul/;
+use CGI qw/:standard *table start_ul start_div end_div/;
 use POSIX qw(strftime);
 
 use lib ".";
@@ -63,7 +63,7 @@ sub revs_for_branch($)
 sub _list_branches()
 {
     if (-x '../branches.sh') {
-	return run_cmd("../branches.sh");
+	return run_cmd("../branches.sh", "-v");
     } else {
 	return @branches;
     }
@@ -73,11 +73,12 @@ sub _list_branches()
 sub list_branches()
 {
     my @out = ();
-    foreach my $branch (_list_branches())
+    foreach my $line (_list_branches())
     {
+        my ($commit, $branch) = split(" ", $line, 2);
         my $branchword = $branch;
         $branchword =~ s{^.*/}{};
-        push @out, "$branchword $branch";
+        push @out, "$branchword $branch $commit";
     }
     return @out;
 }
@@ -106,9 +107,70 @@ print h1($title,
       img({-src=>"feed-icon-28x28.png",-alt=>"[RSS]"})),
 );
 
+my @branchlist = list_branches();
+
+sub branch_age($)
+{
+    my ($branchword, $branch, $topcommit) = split(" ", shift, 3);
+    if (-f "fail/$topcommit") {
+        return -M "fail/$topcommit";
+    } elsif (-f "pass/$topcommit") {
+        return -M "pass/$topcommit";
+    } else {
+        return -1;
+    }
+}
+
+sub fixbranchprint($)
+{
+    my $branchprint = shift;
+    $branchprint =~ s{^origin/}{};
+    $branchprint =~ s{(.*/)?(.*)}{$1<b>$2</b>};
+    return $branchprint;
+}
+
+sub status_to_statcode($)
+{
+    my $status = shift;
+    if ($status eq "ok") {
+        return "ok";
+    } elsif ($status eq "BUILDING") {
+        return "pending";
+    } elsif ($status eq "(Pending)") {
+        return "pending";
+    } elsif ($status =~ m{^W[^/]*$}) {
+        return "warn";
+    } else {
+        # some kind of FAIL marker by default
+        return "err";
+    }
+}
+
+print start_div({id=>"most_recent"}),
+    "Most Recent:",
+    start_ul({id=>"most_recent_list"});
+for my $bpb (sort { branch_age($a) <=> branch_age($b) } @branchlist) {
+    my ($branchword, $branch, $topcommit) = split(" ", $bpb, 3);
+    my $branchprint = fixbranchprint($branch);
+    my $fn;
+    if (-f "fail/$topcommit") {
+        $fn = "fail/$topcommit";
+    } elsif (-f "pass/$topcommit") {
+        $fn = "pass/$topcommit";
+    }
+    next if !$fn;
+    my ($warnmsg, $errs) = find_errors($fn);
+    my $statcode = status_to_statcode($warnmsg);
+    print li(a({href=>"#$branch"}, 
+        span({class=>"status branch status-$statcode"}, $branchprint)));
+    
+    last if (branch_age($bpb) > 14);
+}
+print end_ul, end_div;
+
+
 print start_table({class=>"results",align=>"center"});
 print Tr({class=>"resultheader"},
-    #th("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
     th("Branch"),
     th("Status"), th("Commit"), th("Who"), th("Result"), th(""));
     
@@ -118,12 +180,9 @@ sub spacer()
 }
 
 my $last_ended_in_spacer = 0;
-for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
-    my ($branchword, $branch) = split(" ", $bpb, 2);
-    
-    our $branchprint = $branch;
-    $branchprint =~ s{^origin/}{};
-    $branchprint =~ s{(.*/)?(.*)}{$1<b>$2</b>};
+for my $bpb (sort { lc($a) cmp lc($b) } @branchlist) {
+    our ($branchword, $branch, $topcommit) = split(" ", $bpb, 3);
+    our $branchprint = fixbranchprint($branch);
 
     our $last_was_pending = 0;
     our $print_pending = 1;
@@ -160,31 +219,21 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
             my ($_branchout, $status, $commitlink,
                 $email, $codestr, $comment, $logcgi) = @_;
                 
-            my $statcode;
-            if ($status eq "ok") {
-                $statcode = "ok";
-            } elsif ($status eq "BUILDING") {
-                $statcode = "pending";
-            } elsif ($status eq "(Pending)") {
-                $statcode = "pending";
-            } elsif ($status =~ /^W/) {
-                $statcode = "warn";
-            } else {
-                # some kind of FAIL marker by default
-                $statcode = "err";
-            }
+            my $statcode = status_to_statcode($status);
             
             do_pending_dots(@{$_branchout});
             push @{$_branchout},
                 Tr({class=>"result"},
-                    td({class=>"branch"}, $branchprint),
+                    td({class=>"branch"},
+                        $branchprint),
                     td({class=>"status status-$statcode"}, $status),
                     td({class=>"commit"}, $commitlink),
                     td({class=>"committer"}, $email),
                     td({class=>"details"},
+                        a({class=>"hyper", name=>$branch}, "") . div(
                         span({class=>"codestr"},
                           $logcgi ? a({-href=>$logcgi}, $codestr) : $codestr),
-                        span({class=>"comment"}, $comment))
+                        span({class=>"comment"}, $comment)))
                     );
             $branchprint = "";
         }
@@ -236,5 +285,6 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 }
 
 print end_table();
+print div({class=>"extraspace"}, "&nbsp;");
 print end_html;
 exit 0;
