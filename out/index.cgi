@@ -216,7 +216,7 @@ for my $bpb (sort { lc($a) cmp lc($b) } list_branches()) {
 	    
 	my ($warnmsg, $errs) = find_errors($filename);
 	my $status = ($warnmsg eq "ok") ? "ok" 
-	    : ($warnmsg eq "Warnings") ? "Warn" : "FAIL";
+	    : ($warnmsg =~ /^Warnings\(\d+\)$/) ? "Warn" : "FAIL";
 	pushrow(@branchout, $status,
                 $commitlink, $email, $warnmsg, $comment, $logcgi);
     }

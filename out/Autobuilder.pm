@@ -113,13 +113,13 @@ sub find_errors($)
 	$err_tail = "<p>\n\n<b>Last few messages:</b><p>\n\n@tail\n";
         my @msg = ();
     	if ($warnings) {
-	    	push @msg, "Warnings";
+	    	push @msg, "Warnings($warnings)";
 	}
     	if ($errors || ($overallfail && !$testsfailed)) {
-	    	push @msg, "Errors";
+	    	push @msg, "Errors($errors)";
 	}
     	if ($testsfailed) {
-	    	push @msg, "Failures";
+	    	push @msg, "Failures($testsfailed)";
 	}
     	if (!@msg) {
 	    	push @msg, "ok";
