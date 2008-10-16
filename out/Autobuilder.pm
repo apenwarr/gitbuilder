@@ -71,7 +71,7 @@ sub find_errors($)
 	    	chomp $s;
 		if ($s =~ /^\s*(\S*)\s*(hint|warning|error|fatal)\s*:\s*(.*)/i) {
 		        my $type = $2;
-			$out .= "type: $1 $3<br>\n";
+			$out .= "$type: $1 $3<br>\n";
 		        if ($type =~ /(error|fatal)/i) {
 			    $errors++;
 			} else {

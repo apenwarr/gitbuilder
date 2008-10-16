@@ -58,7 +58,7 @@ for my $path (sort { mtime($b) cmp mtime($a) } @all) {
     my $codestr = $warnmsg;
     $codestr =~ s/([A-Z])[a-z]*/$1/g;
     
-    my $longstr = "$commit\n\n" . squish_log($filename);
+    my $longstr = "$warnmsg: $commit<p>\n\n" . squish_log($filename);
     $longstr =~ s/\&/\&amp;/g;
     $longstr =~ s/</&lt;/g;
     
@@ -74,7 +74,7 @@ for my $path (sort { mtime($b) cmp mtime($a) } @all) {
 	  <pubDate>$date</pubDate>
 	  <link>$url/$logcgi</link>
 	  <guid isPermaLink='true'>$url/$logcgi#$mtime</guid>
-	  <description>$warnmsg\n\n$longstr</description>
+	  <description>$longstr</description>
 	</item>
     };
 }
