@@ -78,6 +78,9 @@ sub find_errors($)
                     } else {
                         $ignore_warnings--;
                     }
+                } elsif ($s =~ /^\s*(make: \*\*\* .*)/) {
+                        $out .= "$1<br>\n";
+                        # $errors++; # the result code should be enough...
 		} elsif ($s =~ /^\s*(\S*)\s*(hint|warning|error|fatal)\s*:\s*(.*)/i) {
 		        my $type = $2;
 			my $s = "$type: $1 $3<br>\n";
