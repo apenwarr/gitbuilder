@@ -59,6 +59,7 @@ sub find_errors($)
         my $errors = 0;
     	my $testsfailed = 0;
         my $overallfail = 0;
+        my $ignore_warnings = 0;
 	my @tail = ();
     
         if ($filename =~ m{fail/}) {
@@ -69,13 +70,25 @@ sub find_errors($)
 		or die("Can't open $filename: $!\n");
 	while (defined(my $s = <$fh>)) {
 	    	chomp $s;
-		if ($s =~ /^\s*(\S*)\s*(hint|warning|error|fatal)\s*:\s*(.*)/i) {
+	    	if ($s =~ /--START-IGNORE-WARNINGS/) {
+	    	    $ignore_warnings++;
+                } elsif ($s =~ /--STOP-IGNORE-WARNINGS/) {
+                    if ($ignore_warnings <= 0) {
+                        $out .= "WARNING: Mismatched STOP-IGNORE-WARNINGS<br>\n";
+                    } else {
+                        $ignore_warnings--;
+                    }
+		} elsif ($s =~ /^\s*(\S*)\s*(hint|warning|error|fatal)\s*:\s*(.*)/i) {
 		        my $type = $2;
-			$out .= "$type: $1 $3<br>\n";
+			my $s = "$type: $1 $3<br>\n";
 		        if ($type =~ /(error|fatal)/i) {
+		            $out .= $s;
 			    $errors++;
 			} else {
-			    $warnings++;
+			    if ($ignore_warnings == 0) {
+			        $out .= $s;
+                                $warnings++;
+                            }
 			}
 		} elsif ($s =~ /^\s*(\S*)\s*(hint|warning)\s*:\s*(.*)/i) {
 			$out .= "$2: $1 $3<br>\n";
@@ -91,8 +104,13 @@ sub find_errors($)
 		    shift @tail;
 		}
 	}
+	
+	if ($ignore_warnings > 0) {
+	    $out .= "WARNING: Mismatched START-IGNORE-WARNINGS<br>\n";
+	}
+	
 	close $fh;
-	$err_tail = "<p>\n\n<b>Last messages:</b><p>\n\n@tail\n";
+	$err_tail = "<p>\n\n<b>Last few messages:</b><p>\n\n@tail\n";
         my @msg = ();
     	if ($warnings) {
 	    	push @msg, "Warnings";
