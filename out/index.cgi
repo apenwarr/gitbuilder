@@ -153,18 +153,25 @@ for my $bpb (sort { branch_age($a) <=> branch_age($b) } @branchlist) {
     my ($branchword, $branch, $topcommit) = split(" ", $bpb, 3);
     my $branchprint = fixbranchprint($branch);
     my $fn;
+    
+    next if (-f "ignore/$topcommit");
+    
     if (-f "fail/$topcommit") {
         $fn = "fail/$topcommit";
     } elsif (-f "pass/$topcommit") {
         $fn = "pass/$topcommit";
     }
-    next if !$fn;
-    my ($warnmsg, $errs) = find_errors($fn);
-    my $statcode = status_to_statcode($warnmsg);
+    my $statcode;
+    if ($fn) {
+        my ($warnmsg, $errs) = find_errors($fn);
+        $statcode = status_to_statcode($warnmsg);
+    } else {
+        $statcode = "pending";
+    }
     print li(a({href=>"#$branch"}, 
         span({class=>"status branch status-$statcode"}, $branchprint)));
     
-    last if (branch_age($bpb) > 14);
+    last if (branch_age($bpb) > 30);
 }
 print end_ul, end_div;
 

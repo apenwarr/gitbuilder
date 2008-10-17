@@ -8,12 +8,15 @@ else
 	VERBOSE=
 fi
 
-git show-ref |
+git show-ref -d |
 	grep -v ' refs/heads/' |
 	grep -v '/HEAD$' |
-	sed -e 's, [^/]*/[^/]*/, ,' |
+	sort -rk 2 |
+	sed -e 's, [^/]*/[^/]*/, ,' -e 's,\^{},,' |
 	while read commit branch; do
-		if [ -e ../out/ignore/$commit ]; then
+		pb="$lb"
+		lb="$branch"
+		if [ -e ../out/ignore/$commit -o "$pb" = "$branch" ]; then
 			continue;
 		fi
 		[ -n "$VERBOSE" ] && echo -n "$commit "
