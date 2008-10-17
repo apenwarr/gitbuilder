@@ -11,8 +11,8 @@ fi
 git show-ref -d |
 	grep -v ' refs/heads/' |
 	grep -v '/HEAD$' |
-	sort -rk 2 |
 	sed -e 's, [^/]*/[^/]*/, ,' -e 's,\^{},,' |
+	tac |
 	while read commit branch; do
 		pb="$lb"
 		lb="$branch"
@@ -21,4 +21,5 @@ git show-ref -d |
 		fi
 		[ -n "$VERBOSE" ] && echo -n "$commit "
 		echo "$branch"
-	done
+	done |
+	tac
