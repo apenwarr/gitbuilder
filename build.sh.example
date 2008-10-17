@@ -22,7 +22,8 @@ make || exit 3
 # return 1 if a target exists but isn't up-to-date, or 2 on error.
 make -q tests
 if [ "$?" = 1 ]; then
-	make test || exit 4
+	# run "make test", but give it a time limit in case a test gets stuck
+	../maxtime 1800 make test || exit 4
 fi
 
 exit 0
