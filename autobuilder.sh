@@ -31,7 +31,9 @@ mkdir -p out/pass out/fail out/ignore
 
 did_something=1
 while [ -n "$did_something" ]; do
-	( cd build && git remote update )
+	( cd build && 
+	  git remote show | xargs git remote prune && 
+	  git remote update )
 	did_something=
 	for branch in $(./branches.sh); do
 		ref=$(./next-rev.sh $branch)
