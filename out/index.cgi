@@ -17,12 +17,12 @@ sub load_revcache()
     my @list;
     while (<$fh>) {
 	chomp;
-	if (/^\:(\S+)/) {
-	    my $newbranch = $1;
+	if (/^\:(.*)/) {
+	    my ($topcommit, $newbranch) = split(" ", $1, 2);
 	    if ($branch) {
 		$revs{$branch} = join("\n", @list);
 	    }
-	    push @branches, $newbranch;
+	    push @branches, "$topcommit $newbranch";
 	    $branch = $newbranch;
 	    @list = ();
 	} else {

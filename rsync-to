@@ -6,8 +6,8 @@ fi
 chmod a+rX -R out
 
 rm -f out/revcache
-./branches.sh | while read branch junk; do
-	echo ":$branch"
+./branches.sh -v | while read commit branch junk; do
+	echo ":$commit $branch"
 	./revlist.sh $branch
 done >out/revcache
 
