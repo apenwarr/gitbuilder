@@ -53,7 +53,6 @@ go()
 	echo $ref >out/.doing
 	rm -f out/pass/$ref out/fail/$ref
 	run $ref | perl -pe 's/\r/\n/g; s/\n+/\n/g;' \
-		| grep -v '^[-\\:A-Za-z0-9_().]* *$' \
 		| tee log.out
 	CODE=${PIPESTATUS[0]}
 	if [ "$CODE" = 0 ]; then
