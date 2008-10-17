@@ -33,6 +33,7 @@ open my $fh, "<$fn"
 	or die("$fn: $!\n");
 
 my $in = 0;
+my $ignore_warnings = 0;
 while (defined(my $s = <$fh>))
 {
     chomp $s;
@@ -52,6 +53,10 @@ while (defined(my $s = <$fh>))
     } elsif ($s =~ /^_+$/) {
     	# print hr;
     	next;
+    } elsif ($s =~ /--START-IGNORE-WARNINGS/) {
+        $ignore_warnings++;
+    } elsif ($s =~ /--STOP-IGNORE-WARNINGS/) {
+        $ignore_warnings--;
     } elsif ($s =~ /^>>>/) {
     	$class = "buildscript";
     	if ($in) {
@@ -73,8 +78,11 @@ while (defined(my $s = <$fh>))
     	$in = 1;
     	next;
     } elsif ($s =~ /^\s*(\S*)\s*(hint|warning|error|fatal)\s*:\s*(.*)/i) {
-    	$class = lc $2;
+    	my $xclass = lc $2;
     	$s = ul("$2: $1 $3");
+        if ($ignore_warnings <= 0 || $xclass !~ /(hint|warning)/i) {
+            $class = $xclass;
+        }
     } elsif ($s =~ /^\s*(make: \*\*\* .*)/) {
         $class = "error";
         $s = ul($1);
