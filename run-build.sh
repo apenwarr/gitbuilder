@@ -12,7 +12,6 @@ mkdir -p out/fail out/pass
 
 log()
 {
-	# (echo "$@") >&2
 	(echo; echo ">>> $@") # log file
 }
 
@@ -52,9 +51,13 @@ go()
 {
 	echo $ref >out/.doing
 	rm -f out/pass/$ref out/fail/$ref
-	run $ref | perl -pe 's/\r/\n/g; s/\n+/\n/g;' \
-		| tee log.out
+	run $ref
 	CODE=${PIPESTATUS[0]}
+	
+	# This whole program's output is being dumped in log.out.  Unix
+	# lets us rename open files, so we can do that here.
+	# FIXME: it would be cleaner if the caller renamed the output
+	# file based on our result code, however.
 	if [ "$CODE" = 0 ]; then
 		echo PASS
 		mv -v log.out out/pass/$ref
@@ -65,6 +68,7 @@ go()
 
 	echo "Done: $ref"
 	rm -f out/.doing
+	return $CODE
 }
 
 set -m
@@ -72,6 +76,5 @@ go &
 XPID=$!
 trap "echo 'Killing (SIGINT)';  kill -TERM -$XPID; exit 1" SIGINT
 trap "echo 'Killing (SIGTERM)'; kill -TERM -$XPID; exit 1" SIGTERM
-wait; wait
-
-exit 0
+wait $XPID
+# return exit code from previous command

@@ -1,4 +1,16 @@
 #!/usr/bin/perl -w
+#
+# A simple script that runs the specified command only if the given lockfile
+# is not locked.  If it *is* locked, we just return 0, considering that
+# a success (after all, the command probably is running successfully; it's
+# just not us that ran it!)
+#
+# If it is *not* currently locked, we lock it, run the command, and return
+# its result.
+#
+# We also make an extra effort to handle signals correctly and cleanup our
+# subprocess and lock file when we receive one.
+#
 use strict;
 use LockFile::Simple;
 
@@ -24,7 +36,7 @@ if (defined($lock)) {
 	}	
 	my $ret = $?;
 	$lock->release;
-	exit $? >> 8;
+	exit $ret >> 8;
     } else {
 	# child
 	exec(@ARGV);

@@ -1,0 +1,64 @@
+#!/usr/bin/perl -w
+#
+# A variant of 'tee' that runs a command and stops when that command finishes.
+# This is needed instead of 'tee' because sometimes, the command ends up
+# (probably accidentally) forking more subprocesses, which might continue
+# living beyond the lifetime of the original process we started.  But 'tee'
+# will keep on going until *all* the processes die that have stdout connected
+# to its stdin pipe, which is no good.
+#
+# runtee starts its own subprocess, so it can monitor to see when that
+# subprocess dies, and clean up accordingly at that time.
+#
+# Like 'tee', we write to the given file *and* to stdout.  Unlike 'tee', 
+# we capture both stdout and stderr from the program.
+#
+use strict;
+use IO::Select;
+use POSIX ":sys_wait_h";
+$| = 1;
+
+if (@ARGV < 2) {
+    print STDERR "Usage: $0 <logfile> <command line...>\n";
+    exit 127;
+}	
+
+my $logname = shift @ARGV;
+open(my $log, ">$logname") or die("Can't open $logname: $!\n");
+
+my $pid = open(my $fh, "-|");
+my $done = 0;
+if ($pid) {
+    # parent
+    local $SIG{INT} = sub { kill 2, $pid; };
+    local $SIG{TERM} = sub { kill 15, $pid; };
+    local $SIG{CHLD} = sub { 
+        $done = 1;
+    };
+    my $s = IO::Select->new($fh);
+    while (1) {
+        if ($s->can_read($done ? 0 : 5)) {
+            my $buf;
+            my $len = sysread($fh, $buf, 1024);
+            last if ($len == 0); # EOF, definitely done
+            print STDOUT $buf;
+            print $log $buf;
+        } elsif ($done) {
+            # only honour $done if the input buffer is empty
+            last;
+        }
+    }
+    my $newpid = waitpid($pid, 0);
+    if ($newpid != $pid) {
+        die("waitpid returned '$newpid', expected '$pid'\n");
+    }	
+    exit $? >> 8;
+} else {
+    # child
+    open STDERR, '>&STDOUT' or die("Can't dup stdout: $!\n");
+    exec(@ARGV);
+    exit 126; # just in case
+}
+
+# NOTREACHED
+exit 125;
