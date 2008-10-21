@@ -178,7 +178,7 @@ print end_ul, end_div;
 
 print start_table({class=>"results",align=>"center"});
 print Tr({class=>"resultheader"},
-    th("Branch"),
+    th({style=>'text-align: right'}, "Branch"),
     th("Status"), th("Commit"), th("Who"), th("Result"), th(""));
     
 sub spacer()
