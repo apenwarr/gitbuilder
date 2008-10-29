@@ -5,6 +5,7 @@
 /out/ignore
 /out/lastlog
 /out/revcache
+/out/errcache
 /out/describe
 /build
 *.lock
