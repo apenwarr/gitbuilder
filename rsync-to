@@ -3,7 +3,7 @@ if [ -z "$1" ]; then
 	echo "Usage: $0 <rsync-dest>" >&2
 	exit 1
 fi
-chmod a+rX -R out
+chmod a+rX -R out 2>/dev/null
 
 rm -f out/revcache
 ./branches.sh -v | while read commit branch junk; do
@@ -16,9 +16,8 @@ mkdir -p out/describe
 	cd build
 	for d in ../out/pass/* ../out/fail/*; do
 		b=$(basename $d)
-		git describe --all --contains $b >../out/describe/$b
+		git describe --all --contains --always $b >../out/describe/$b
 	done
 )
-
-exec rsync -za out/. "$1" \
+exec rsync -za --no-owner out/. "$1" \
 	--exclude '*~'
