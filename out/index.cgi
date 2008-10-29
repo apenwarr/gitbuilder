@@ -132,7 +132,9 @@ sub fixbranchprint($)
 sub status_to_statcode($)
 {
     my $status = shift;
-    if ($status eq "ok") {
+    if (!defined($status)) {
+	return "pending";
+    } elsif ($status eq "ok") {
         return "ok";
     } elsif ($status eq "BUILDING") {
         return "pending";
@@ -156,18 +158,8 @@ for my $bpb (sort { branch_age($a) <=> branch_age($b) } @branchlist) {
     
     next if (-f "ignore/$topcommit");
     
-    if (-f "fail/$topcommit") {
-        $fn = "fail/$topcommit";
-    } elsif (-f "pass/$topcommit") {
-        $fn = "pass/$topcommit";
-    }
-    my $statcode;
-    if ($fn) {
-        my ($warnmsg, $errs) = find_errors($fn);
-        $statcode = status_to_statcode($warnmsg);
-    } else {
-        $statcode = "pending";
-    }
+    my ($warnmsg, $errs) = find_errors($topcommit);
+    my $statcode = status_to_statcode($warnmsg);
     print li(a({href=>"#$branch"}, 
         span({class=>"status branch status-$statcode"}, $branchprint)));
     
@@ -214,7 +206,6 @@ for my $bpb (sort { lc($a) cmp lc($b) } @branchlist) {
     foreach my $rev (revs_for_branch($branch)) {
 	my ($commit, $email, $comment) = split(" ", $rev, 3);
 	
-	my $filename;
 	my $failed;
 	my $logcgi = "log.cgi?log=$commit";
 	$email =~ s/\@.*//;
@@ -246,11 +237,9 @@ for my $bpb (sort { lc($a) cmp lc($b) } @branchlist) {
         }
         
 	if (-f "pass/$commit") {
-	    $filename = "pass/$commit";
 	    $failed = 0;
 	    # fall through
 	} elsif (-f "fail/$commit") {
-	    $filename = "fail/$commit";
 	    $failed = 1;
 	    # fall through
 	} elsif ($commit eq $currently_doing) {
@@ -270,7 +259,7 @@ for my $bpb (sort { lc($a) cmp lc($b) } @branchlist) {
 	    next;
 	}
 	    
-	my ($warnmsg, $errs) = find_errors($filename);
+	my ($warnmsg, $errs) = find_errors($commit);
 	my $status = ($warnmsg eq "ok") ? "ok" 
 	    : ($warnmsg =~ /^Warnings\(\d+\)$/) ? "Warn" : "FAIL";
 	pushrow(@branchout, $status,

@@ -117,18 +117,12 @@ sub revformat(@)
         $filenames .= "<p>";
     }
     
-    my $abstatus = "";
-    if (-f "fail/$rev") {
-	$abstatus = "Errors";
-    } elsif (-f "pass/$rev") {
-	my ($warnmsg, $errs) = find_errors("pass/$rev");
-	$abstatus = $warnmsg;
-    }
-    if ($abstatus) {
+    my ($warnmsg, $errs) = find_errors($rev);
+    if ($warnmsg) {
 	my $aburl = autobuilder_url();
-	$abstatus = sprintf("(Autobuilder: %s)<br>",
-	    $aburl ? "<a href='$aburl/log.cgi?log=$rev'>$abstatus</a>"
-	           : $abstatus);
+	$warnmsg = sprintf("(Autobuilder: %s)<br>",
+	    $aburl ? "<a href='$aburl/log.cgi?log=$rev'>$warnmsg</a>"
+	           : $warnmsg);
     }
     
     push @out, qq{
@@ -136,7 +130,7 @@ sub revformat(@)
 	  <span class='svtitle'>$commitlink by <b>$who</b></span>
 	  <span class='svdate'>$date</span>
 	  <ul>
-	  <div class='svcommentary'>$abstatus$filenames</div>
+	  <div class='svcommentary'>$warnmsg$filenames</div>
 	  <div class='svtext'>$log</div>
 	  </ul>
 	</div>

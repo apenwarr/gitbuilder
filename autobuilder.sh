@@ -27,7 +27,8 @@ if [ ! -x build.sh ]; then
 	exit 1
 fi
 
-mkdir -p out/pass out/fail out/ignore
+mkdir -p out/pass out/fail out/ignore out/errcache
+chmod a+w out/errcache
 
 did_something=1
 while [ -n "$did_something" ]; do

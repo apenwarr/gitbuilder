@@ -54,11 +54,11 @@ for my $path (sort { mtime($b) cmp mtime($a) } @all) {
 	next;
     }
     
-    my ($warnmsg, $errs) = find_errors($filename);
+    my ($warnmsg, $errs) = find_errors($commit);
     my $codestr = $warnmsg;
     $codestr =~ s/([A-Z])[a-z]*/$1/g;
     
-    my $longstr = "$warnmsg: $commit<p>\n\n" . squish_log($filename);
+    my $longstr = "$warnmsg: $commit<p>\n\n" . squish_log($commit);
     $longstr =~ s/\&/\&amp;/g;
     $longstr =~ s/</&lt;/g;
     

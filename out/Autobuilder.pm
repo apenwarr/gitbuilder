@@ -51,7 +51,7 @@ sub commitlink($$)
 }
 
 my $err_tail = "";
-sub find_errors($)
+sub _find_errors($)
 {
     my $filename = shift;
     my $out = "";
@@ -119,7 +119,11 @@ sub find_errors($)
 	push @msg, "Warnings($warnings)";
     }
     if ($errors || ($overallfail && !$testsfailed)) {
-	push @msg, "Errors($errors)";
+	if ($errors > 0) {
+	    push @msg, "Errors($errors)";
+	} else {
+	    push @msg, "Errors";
+	}
     }
     if ($testsfailed) {
 	push @msg, "Failures($testsfailed)";
@@ -130,10 +134,43 @@ sub find_errors($)
     return join("/", @msg), $out;
 }
 
-sub squish_log($)
+sub age($)
 {
     my $filename = shift;
-    my ($msg, $out) = find_errors($filename);
+    return -M $filename;
+}
+
+sub find_errors($)
+{
+    my $rev = shift;
+    my $fn;
+    
+    if (-e "pass/$rev") {
+	$fn = "pass/$rev";
+    } elsif (-e "fail/$rev") {
+	$fn = "fail/$rev";
+    } else {
+	return undef, undef;
+    }
+    
+    if (-r "errcache/$rev" && age("errcache/$rev") < age($fn)) {
+	return _find_errors("errcache/$rev");
+    } else {
+	my ($warnmsg, $errs) = _find_errors($fn);
+	if (defined($warnmsg)) {
+	    mkdir "errcache";
+	    open my $outf, ">errcache/$rev";
+	    print $outf $errs;
+	    close $outf;
+	}
+	return $warnmsg, $errs;
+    }
+}
+
+sub squish_log($)
+{
+    my $rev = shift;
+    my ($msg, $out) = find_errors($rev);
     return $out . $err_tail;
 }
 
