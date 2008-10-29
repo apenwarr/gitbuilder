@@ -20,169 +20,169 @@ sub _cat_line($)
 
 sub project_name()
 {
-        return _cat_line('project-name');
+    return _cat_line('project-name');
 }
 
 my $gitweb_url;
 sub gitweb_url()
 {
-        return $gitweb_url;
+    return $gitweb_url;
 }
 $gitweb_url = _cat_line('gitweb-url');
 
 my $autobuilder_url;
 sub autobuilder_url()
 {
-        return $autobuilder_url;
+    return $autobuilder_url;
 }
 $autobuilder_url = _cat_line('autobuilder-url')
     and $autobuilder_url =~ s{/$}{};
 
 sub commitlink($$)
 {
-        my ($commit, $text) = @_;
-	my $gitweb_url = gitweb_url();
-	if ($gitweb_url) {
-	    return "<a href=\"$gitweb_url&h=$commit\">"
-	        . $text
-	        . "</a>";
-	}
-	return $text;
+    my ($commit, $text) = @_;
+    my $gitweb_url = gitweb_url();
+    if ($gitweb_url) {
+	return "<a href=\"$gitweb_url&h=$commit\">"
+	  . $text
+	  . "</a>";
+    }
+    return $text;
 }
 
 my $err_tail = "";
 sub find_errors($)
 {
-	my $filename = shift;
-	my $out = "";
-    	my $warnings = 0;
-        my $errors = 0;
-    	my $testsfailed = 0;
-        my $overallfail = 0;
-        my $ignore_warnings = 0;
-	my @tail = ();
+    my $filename = shift;
+    my $out = "";
+    my $warnings = 0;
+    my $errors = 0;
+    my $testsfailed = 0;
+    my $overallfail = 0;
+    my $ignore_warnings = 0;
+    my @tail = ();
     
-        if ($filename =~ m{fail/}) {
-	    $overallfail = 1;
-	}
+    if ($filename =~ m{fail/}) {
+	$overallfail = 1;
+    }
 	
-	open my $fh, "<$filename"
-		or die("Can't open $filename: $!\n");
-	while (defined(my $s = <$fh>)) {
-	    	chomp $s;
-	    	if ($s =~ /--START-IGNORE-WARNINGS/) {
-	    	    $ignore_warnings++;
-                } elsif ($s =~ /--STOP-IGNORE-WARNINGS/) {
-                    if ($ignore_warnings <= 0) {
-                        $out .= "WARNING: Mismatched STOP-IGNORE-WARNINGS<br>\n";
-                    } else {
-                        $ignore_warnings--;
-                    }
-                } elsif ($s =~ /^\s*(make: \*\*\* .*)/) {
-                        $out .= "$1<br>\n";
-                        # $errors++; # the result code should be enough...
-		} elsif ($s =~ /^\s*(\S*)\s*(hint|warning|error|fatal)\s*:\s*(.*)/i) {
-		        my $type = $2;
-			my $s = "$type: $1 $3<br>\n";
-		        if ($type =~ /(error|fatal)/i) {
-		            $out .= $s;
-			    $errors++;
-			} else {
-			    if ($ignore_warnings == 0) {
-			        $out .= $s;
-                                $warnings++;
-                            }
-			}
-		} elsif ($s =~ /^\s*(\S*)\s*(hint|warning)\s*:\s*(.*)/i) {
-			$out .= "$2: $1 $3<br>\n";
-		    	$warnings++;
-		} elsif ($s =~ /^!\s*(.*?)\s+(\S+)\s*$/) {
-		        if ($2 ne "ok") {
-			        $out .= "! $1   <b>$2</b><br>\n";
-			        $testsfailed++;
-                        }
+    open my $fh, "<$filename"
+      or die("Can't open $filename: $!\n");
+    while (defined(my $s = <$fh>)) {
+	chomp $s;
+	if ($s =~ /--START-IGNORE-WARNINGS/) {
+	    $ignore_warnings++;
+	} elsif ($s =~ /--STOP-IGNORE-WARNINGS/) {
+	    if ($ignore_warnings <= 0) {
+		$out .= "WARNING: Mismatched STOP-IGNORE-WARNINGS<br>\n";
+	    } else {
+		$ignore_warnings--;
+	    }
+	} elsif ($s =~ /^\s*(make: \*\*\* .*)/) {
+	    $out .= "$1<br>\n";
+	    # $errors++; # the result code should be enough...
+	} elsif ($s =~ /^\s*(\S*)\s*(hint|warning|error|fatal)\s*:\s*(.*)/i) {
+	    my $type = $2;
+	    my $s = "$type: $1 $3<br>\n";
+	    if ($type =~ /(error|fatal)/i) {
+		$out .= $s;
+		$errors++;
+	    } else {
+		if ($ignore_warnings == 0) {
+		    $out .= $s;
+		    $warnings++;
 		}
-		push @tail, "$s<br>\n";
-		if (@tail > 25) {
-		    shift @tail;
-		}
+	    }
+	} elsif ($s =~ /^\s*(\S*)\s*(hint|warning)\s*:\s*(.*)/i) {
+	    $out .= "$2: $1 $3<br>\n";
+	    $warnings++;
+	} elsif ($s =~ /^!\s*(.*?)\s+(\S+)\s*$/) {
+	    if ($2 ne "ok") {
+		$out .= "! $1   <b>$2</b><br>\n";
+		$testsfailed++;
+	    }
 	}
-	
-	if ($ignore_warnings > 0) {
-	    $out .= "WARNING: Mismatched START-IGNORE-WARNINGS<br>\n";
+	push @tail, "$s<br>\n";
+	if (@tail > 25) {
+	    shift @tail;
 	}
-	
-	close $fh;
-	$err_tail = "<p>\n\n<b>Last few messages:</b><p>\n\n@tail\n";
-        my @msg = ();
-    	if ($warnings) {
-	    	push @msg, "Warnings($warnings)";
-	}
-    	if ($errors || ($overallfail && !$testsfailed)) {
-	    	push @msg, "Errors($errors)";
-	}
-    	if ($testsfailed) {
-	    	push @msg, "Failures($testsfailed)";
-	}
-    	if (!@msg) {
-	    	push @msg, "ok";
-	}
-	return join("/", @msg), $out;
+    }
+    
+    if ($ignore_warnings > 0) {
+	$out .= "WARNING: Mismatched START-IGNORE-WARNINGS<br>\n";
+    }
+    
+    close $fh;
+    $err_tail = "<p>\n\n<b>Last few messages:</b><p>\n\n@tail\n";
+    my @msg = ();
+    if ($warnings) {
+	push @msg, "Warnings($warnings)";
+    }
+    if ($errors || ($overallfail && !$testsfailed)) {
+	push @msg, "Errors($errors)";
+    }
+    if ($testsfailed) {
+	push @msg, "Failures($testsfailed)";
+    }
+    if (!@msg) {
+	push @msg, "ok";
+    }
+    return join("/", @msg), $out;
 }
 
 sub squish_log($)
 {
-	my $filename = shift;
-	my ($msg, $out) = find_errors($filename);
-        return $out . $err_tail;
+    my $filename = shift;
+    my ($msg, $out) = find_errors($filename);
+    return $out . $err_tail;
 }
 
 sub mtime($)
 {
-	my $filename = shift @_;
-	my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
-	    $atime,$mtime,$ctime,$blksize,$blocks) = stat($filename)
-	    or die("stat $filename: $!\n");
-	return $mtime;
+    my $filename = shift @_;
+    my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+	$atime,$mtime,$ctime,$blksize,$blocks) = stat($filename)
+      or die("stat $filename: $!\n");
+    return $mtime;
 }
 
 sub catfile(@)
 {
-	my @list = ();
-	foreach my $file (@_) {
-		open my $fh, "<$file" or die("$file: $!\n");
-		push @list, <$fh>;
-		close $fh;
-	}
-	return join('', @list);
+    my @list = ();
+    foreach my $file (@_) {
+	open my $fh, "<$file" or die("$file: $!\n");
+	push @list, <$fh>;
+	close $fh;
+    }
+    return join('', @list);
 }
 
 sub basename($)
 {
-	my $filename = shift @_;
-	$filename =~ m{.*/([^/]+)}  &&  ($filename = $1);
-	return $filename;
+    my $filename = shift @_;
+    $filename =~ m{.*/([^/]+)}  &&  ($filename = $1);
+    return $filename;
 }
 
 sub stripwhite($)
 {
-	my $s = shift @_;
-	$s =~ s/^\s+//mg;
-	$s =~ s/\s+$//mg;
-	return $s;
+    my $s = shift @_;
+    $s =~ s/^\s+//mg;
+    $s =~ s/\s+$//mg;
+    return $s;
 }
 
 sub shorten($$@)
 {
-	my ($s, $len, $suffix) = @_;
-	if (!defined($suffix)) {
-	    $suffix = "...";
-	}
-	if (length($s) > $len) {
-		return substr($s, 0, $len) . $suffix;
-	} else {
-		return $s;
-	}
+    my ($s, $len, $suffix) = @_;
+    if (!defined($suffix)) {
+	$suffix = "...";
+    }
+    if (length($s) > $len) {
+	return substr($s, 0, $len) . $suffix;
+    } else {
+	return $s;
+    }
 }
 
 sub git_describe($)
