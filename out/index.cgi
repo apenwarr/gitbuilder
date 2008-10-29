@@ -125,7 +125,7 @@ sub fixbranchprint($)
 {
     my $branchprint = shift;
     $branchprint =~ s{^origin/}{};
-    $branchprint =~ s{(.*/)?(.*)}{$1<b>$2</b>};
+    $branchprint =~ s{(.*/?)(.*)}{$1<b>$2</b>};
     return $branchprint;
 }
 
