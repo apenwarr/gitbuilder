@@ -51,8 +51,9 @@ sub commitlink($$)
 }
 
 my $err_tail = "";
-sub _find_errors($)
+sub _find_errors($$)
 {
+    my $rev = shift;
     my $filename = shift;
     my $out = "";
     my $warnings = 0;
@@ -62,7 +63,7 @@ sub _find_errors($)
     my $ignore_warnings = 0;
     my @tail = ();
     
-    if ($filename =~ m{fail/}) {
+    if (-e "fail/$rev") {
 	$overallfail = 1;
     }
 	
@@ -154,9 +155,9 @@ sub find_errors($)
     }
     
     if (-r "errcache/$rev" && age("errcache/$rev") < age($fn)) {
-	return _find_errors("errcache/$rev");
+	return _find_errors($rev, "errcache/$rev");
     } else {
-	my ($warnmsg, $errs) = _find_errors($fn);
+	my ($warnmsg, $errs) = _find_errors($rev, $fn);
 	if (defined($warnmsg)) {
 	    mkdir "errcache";
 	    open my $outf, ">errcache/$rev";
