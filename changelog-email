@@ -19,7 +19,8 @@ cat <<-EOF
 	From: ChangeLog Script <$EMAIL>
 	To: (undisclosed recipients);
 	Subject: Changes in $PROJ for $DATE
-	Content-Type: text/html
+	MIME-Version: 1.0
+	Content-Type: text/html; charset=utf-8
 	Precedence: bulk
 	Importance: low
 	X-This-Is-Git-Changelog: yes
