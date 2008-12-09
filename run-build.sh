@@ -29,8 +29,8 @@ _run()
 	git reset --hard $commit || return 20
 	
 	log "Cleaning..."
-	git clean -f -x -d || 
-	git clean -f -x -d || return 30
+	git clean -q -f -x -d || 
+	git clean -q -f -x -d || return 30
 	
 	log "Building..."
 	../build.sh 2>&1 || return 40
