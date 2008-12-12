@@ -24,6 +24,7 @@ _run()
 	cd build || return 10
 
 	log "Switching git branch..."
+	git checkout .  # in case there were modified files
 	git checkout "$commit" &&
 	git reset --hard $commit || 
 	git reset --hard $commit || return 20
