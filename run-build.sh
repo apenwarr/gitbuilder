@@ -9,6 +9,7 @@ fi
 ref="$1"
 
 mkdir -p out/fail out/pass
+chmod 777 out/fail
 
 log()
 {

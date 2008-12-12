@@ -208,14 +208,15 @@ for my $bpb (sort { lc($a) cmp lc($b) } @branchlist) {
 	
 	my $failed;
 	my $logcgi = "log.cgi?log=$commit";
+	my $rebuildcgi = "rebuild.cgi?log=$commit";
 	$email =~ s/\@.*//;
 	my $commitlink = commitlink($commit, shorten($commit, 7, ""));
 	$comment =~ s/^\s*-?\s*//;
 	
-        sub pushrow(\@$$$$$$)
+        sub pushrow(\@$$$$$$$)
         {
             my ($_branchout, $status, $commitlink,
-                $email, $codestr, $comment, $logcgi) = @_;
+                $email, $codestr, $comment, $logcgi, $rebuildcgi) = @_;
                 
             my $statcode = status_to_statcode($status);
             
@@ -229,9 +230,13 @@ for my $bpb (sort { lc($a) cmp lc($b) } @branchlist) {
                     td({class=>"committer"}, $email),
                     td({class=>"details"},
                         a({class=>"hyper", name=>$branch}, "") . div(
-                        span({class=>"codestr"},
-                          $logcgi ? a({-href=>$logcgi}, $codestr) : $codestr),
-                        span({class=>"comment"}, $comment)))
+                          span({class=>"codestr"},
+                            $logcgi ? a({-href=>$logcgi}, $codestr) : $codestr),
+                          span({class=>"comment"}, $comment),
+                          span({class=>"hyper"},  
+                            ("$statcode" eq "err") ? "(" . 
+                              a({-href=>$rebuildcgi}, "Force Rebuild") . ")" : "")
+                        ))
                     );
             $branchprint = "";
         }
@@ -245,12 +250,12 @@ for my $bpb (sort { lc($a) cmp lc($b) } @branchlist) {
 	} elsif ($commit eq $currently_doing) {
 	    # currently building this one
 	    pushrow(@branchout, "BUILDING", 
-	            $commitlink, $email, "", $comment, "");
+	            $commitlink, $email, "", $comment, "", "");
 	    next;
 	} elsif ($last_was_pending == 0 && $print_pending) {
 	    # first pending in a group: print (Pending)
 	    pushrow(@branchout, "(Pending)",
-	            $commitlink, $email, "", $comment, "");
+	            $commitlink, $email, "", $comment, "", "");
 	    $last_was_pending = 1;
 	    next;
 	} else {
@@ -263,7 +268,7 @@ for my $bpb (sort { lc($a) cmp lc($b) } @branchlist) {
 	my $status = ($warnmsg eq "ok") ? "ok" 
 	    : ($warnmsg =~ /^Warnings\(\d+\)$/) ? "Warn" : "FAIL";
 	pushrow(@branchout, $status,
-                $commitlink, $email, $warnmsg, $comment, $logcgi);
+                $commitlink, $email, $warnmsg, $comment, $logcgi, $rebuildcgi);
     }
     
     do_pending_dots(@branchout);
