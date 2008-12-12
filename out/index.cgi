@@ -232,8 +232,7 @@ for my $bpb (sort { lc($a) cmp lc($b) } @branchlist) {
                         a({class=>"hyper", name=>$branch}, "") . div(
                           span({class=>"codestr"},
                             $logcgi ? a({-href=>$logcgi}, $codestr) : $codestr),
-                          span({class=>"comment"}, $comment),
-                          span({class=>"hyper"},  
+                          span({class=>"comment"}, $comment,
                             ("$statcode" eq "err") ? "(" . 
                               a({-href=>$rebuildcgi}, "Force Rebuild") . ")" : "")
                         ))
