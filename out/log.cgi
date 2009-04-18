@@ -49,10 +49,8 @@ while (defined(my $s = <$fh>))
     
     my $class='debug';
     if ($s eq "") {
+	print p($s);
         next;
-    } elsif ($s =~ /^_+$/) {
-    	# print hr;
-    	next;
     } elsif ($s =~ /--START-IGNORE-WARNINGS/) {
         $ignore_warnings++;
     } elsif ($s =~ /--STOP-IGNORE-WARNINGS/) {
