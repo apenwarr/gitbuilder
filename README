@@ -102,8 +102,9 @@ SETTING UP AN AUTOBUILDER IN CRON
 =================================
 
 Now that your gitbuilder is working, you probably want to have it continue
-to update itself automatically.  gitbuilder is designed to make it safe to
-do that.  Try adding a line like this to your crontab (using crontab -e):
+to building new versions automatically.  gitbuilder is designed to make it
+safe to do that.  Try adding a line like this to your crontab (using crontab
+-e):
 
 	* *  * * *  nice ~/src/gitbuilder/start >/dev/null 2>&1
 
