@@ -77,6 +77,7 @@ sub list_branches()
     {
         my ($commit, $branch) = split(" ", $line, 2);
         my $branchword = $branch;
+        next if $branchword =~ /@/;
         $branchword =~ s{^.*/}{};
         push @out, "$branchword $branch $commit";
     }
