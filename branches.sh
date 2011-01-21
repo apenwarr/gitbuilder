@@ -2,6 +2,10 @@
 DIR=$(dirname $0)
 cd "$DIR/build"
 
+if [ -x ../branches-local ]; then
+    exec ../branches-local "$@"
+fi
+
 if [ "$1" = "-v" ]; then
 	VERBOSE=1
 else

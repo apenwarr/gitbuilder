@@ -9,3 +9,4 @@
 /out/describe
 /build
 *.lock
+/branches-local
