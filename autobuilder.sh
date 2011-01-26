@@ -49,7 +49,7 @@ while [ -n "$did_something" ]; do
 		did_something=1
 		echo "Building $branch: $ref"
 		set -m
-		./runtee log.out ./run-build.sh $ref &
+		./runtee out/log ./run-build.sh $ref &
 		XPID=$!
 		trap "echo 'Killing (SIGINT)';  kill -TERM -$XPID; exit 1" SIGINT
 		trap "echo 'Killing (SIGTERM)'; kill -TERM -$XPID; exit 1" SIGTERM

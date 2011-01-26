@@ -62,10 +62,10 @@ go()
 	# file based on our result code, however.
 	if [ "$CODE" = 0 ]; then
 		echo PASS
-		mv -v log.out out/pass/$ref
+		mv -v out/log out/pass/$ref
 	else
 		echo FAIL
-		mv -v log.out out/fail/$ref
+		mv -v out/log out/fail/$ref
 	fi
 
 	echo "Done: $ref"
