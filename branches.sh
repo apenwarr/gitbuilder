@@ -1,4 +1,10 @@
 #!/bin/bash
+
+if [ -f ./branches.txt ]; then
+	cat branches.txt
+	exit 0
+fi
+
 DIR=$(dirname $0)
 cd "$DIR/build"
 
