@@ -7,6 +7,7 @@ if [ -z "$1" ]; then
 fi
 
 ref="$1"
+branch="$2"
 
 mkdir -p out/fail out/pass
 chmod 777 out/fail
@@ -35,7 +36,12 @@ _run()
 	git clean -q -f -x -d || return 30
 	
 	log "Building..."
-	../build.sh 2>&1 || return 40
+	# Prefer a branch-specific build over a generic one.
+	if [ -x ../build-$branch.sh ]; then
+		../build-$branch.sh 2>&1 || return 40
+	else
+		../build.sh 2>&1 || return 40
+	fi
 	
 	log "Done at: $(date)"
 	return 0
