@@ -18,12 +18,12 @@ autoconf || true
 # Actually build the project
 make || exit 3
 
-# Only run the unit tests if the 'make test' target exists.  Make will
+# Only run the unit tests if the 'make tests' target exists.  Make will
 # return 1 if a target exists but isn't up-to-date, or 2 on error.
 make -q tests
 if [ "$?" = 1 ]; then
 	# run "make test", but give it a time limit in case a test gets stuck
-	../maxtime 1800 make test || exit 4
+	../maxtime 1800 make tests || exit 4
 fi
 
 exit 0
