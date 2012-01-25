@@ -1,0 +1,138 @@
+body {
+        margin: 0.5em;
+        padding: 0em;
+        border: 1px solid white;
+}
+
+h1 {
+        margin-top: 15pt;
+}
+
+table, table * {white-space: no-wrap}
+
+div.logo {
+        float: right;
+        font-family: Times New Roman, Times, serif;
+        color: #aaaaaa;
+        margin: 0px;
+        margin-top: 15pt;
+        padding: 0px;
+        text-align: right;
+}
+div.logo a {
+        color: #888888;
+}
+
+div.extraspace {
+        padding-bottom: 75%;
+}
+
+#most_recent {
+        overflow: hidden;
+        font-size: 10pt;
+        white-space: nowrap;
+}
+#most_recent ul {
+        display: inline;
+        margin: 0px;
+        padding-left: 1em;
+        font-size: 10pt;
+        list-style-type: none;
+}
+#most_recent ul li {
+        display: inline;
+        margin-right: 0.5em;
+}
+
+table.results th {
+        padding-right: 0.5em;
+        padding-left: 0.5em;
+        text-align: left;
+        font-weight: bold;
+        color: #666666;
+        padding-bottom: 0.5em;
+}
+
+td {
+        padding-right: 0.5em;
+        padding-left: 0.5em;
+}
+
+table.results a {
+        text-decoration: none;
+}
+a.hyper {
+        float: left;
+        display: block;
+        padding: 0px;
+        margin: 0px;
+        padding-top: 15pt;
+        margin-top: -15pt;
+        width: 0px;
+        height: 0px;
+}
+
+table.results a:hover {
+        text-decoration: underline;
+}
+
+table.results td.loglink {
+        background: white;
+        visibility: hidden;
+        white-space: nowrap;
+        font-size: smaller;
+}
+
+table.results td.details {
+        padding-left: 2em;
+        text-indent: -2em;
+}
+
+.branch {
+        color: #666666;
+        text-align: right;
+}
+.branch b {
+        color: black;
+        font-weight: normal;
+}
+
+td.status {
+        text-align: center;
+}
+span.status:hover {
+        text-decoration: underline;
+}
+.status-ok {
+        background: #ccffcc;
+}
+.status-warn {
+        background: #ffffcc;
+}
+.status-err {
+        background: #ffcccc;
+}
+td.status-warn, td.status-err {
+        font-weight: bold;
+}
+
+td.committer {
+        color: #666666;
+}
+
+span.codestr {
+        color: black;
+}
+
+span.comment {
+        color: #666666;
+        font-size: small;
+}
+
+tr.spacer td {
+        padding: 0.5em;
+}
+
+img {
+        border: 0px;
+}
