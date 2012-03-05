@@ -2,11 +2,16 @@
  * @author mvanwamb
  */
  urls = new Array(
-			    'http://localhost/view/test.htm',
-			    'http://localhost/view/test2.htm',
-			    'http://localhost/view/test3.htm',
-			    'http://localhost/view/test4.htm'
+        'http://lonsdale.tchpc.tcd.ie/~jtang/cports-atlas-chuck-rhel-5.x86_64/',
+        'http://lonsdale.tchpc.tcd.ie/~jtang/cports-atlas-lonsdale-rhel-5.x86_64/',
+        'http://lonsdale.tchpc.tcd.ie/~jtang/cports-lonsdale-rhel-5.x86_64/',
+        'http://lonsdale.tchpc.tcd.ie/~jtang/cports-openmpi-lonsdale-rhel-5.x86_64/',
+        'http://lonsdale.tchpc.tcd.ie/~jtang/cports-release/',
+        'http://lonsdale.tchpc.tcd.ie/~jtang/cports-R-lonsdale-rhel-5.x86_64/',
+        'http://lonsdale.tchpc.tcd.ie/~jtang/neural-chuck-rhel-5.x86_64/',
+        'http://lonsdale.tchpc.tcd.ie/~jtang/neural-lonsdale-rhel-5.x86_64/',
+	'http://lonsdale.tchpc.tcd.ie/~jtang/neural-x00-i686-apple-darwin10.8.0/'
 				);
 				
-serverUrl = "http://localhost/view/request.php";
+//serverUrl = "http://localhost/view/request.php";
 
