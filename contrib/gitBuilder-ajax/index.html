@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+		Remove this if you use the .htaccess -->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<title>Gitbuilder</title>
+		<meta name="description" content="" />
+		<meta name="author" content="mvanwamb" />
+		<meta name="viewport" content="width=device-width; initial-scale=1.0" />
+		<!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
+		<link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<link href="css/bootstrap.min.css" rel="stylesheet"/>
+		<link href="css/style.css" rel="stylesheet" />
+		<link href="css/gitbuilder.css" rel="stylesheet" />
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/urls.js"></script>
+	</head>
+	<body>
+		<header>
+			
+		</header>
+		<div>		
+		<table id="links" class="table table-striped table-bordered" >
+		  <thead>
+		    <tr>
+		    
+		      <th>Url</th>
+		      <th>Details</th>
+		      <th></th>
+		    </tr>
+		  </thead>
+		  <tfoot></tfoot>
+		  <tbody>
+		    
+		  </tbody>
+		</table>
+		
+		<div id="info"></div>
+		<div class="empt"></div>
+		<footer>
+			
+		</footer>
+		</div>
+		<script>
+			$(document).ready(function(){
+				
+				var length = urls.length
+				for(var i =0;i<length;i++){
+					summarizeUrls(urls[i],i);
+					
+				}			
+			});
+			
+			
+			function summarizeUrls(url,i){
+				var link = url;
+				
+				if (typeof serverUrl !== 'undefined') {
+					$.getJSON(serverUrl+"?url="+url+"&callback=?",function(d){
+						var d = d.html;
+						var mostrecent = $(d).filter("#most_recent").html()
+	
+						var url = "<a class='normalLink' href='"+link+"'>"+link+"</a>";
+						var btn = "<a title='Show it here' href='"+link+"' class='btn showDetails'>Show</a>";
+						var btn2 = "<a title='hide it' href='#' class='btn hideBtn'>Hide</a>";
+						var row = '<tr><td>'+url+"</td><td><div class='most_recent'>"+mostrecent+"</div></td><td class='butColumn'>"+btn+btn2+"</td></tr>";
+						$("#links tbody").append(row);
+						makeShowLinks();
+						checkStatus();
+						makeHideLinks();
+					});
+				}else{
+					console.log(url);
+					$.get(url,function(d){
+						
+						
+						var mostrecent = $(d).filter("#most_recent").html()
+						
+						var url = "<a class='normalLink' href='"+link+"'>"+link+"</a>";
+						var btn = "<a title='Show it here' href='"+link+"' class='btn showDetails'>Show</a>";
+						var btn2 = "<a title='hide it' href='#' class='btn hideBtn'>Hide</a>";
+						var row = '<tr><td>'+url+"</td><td><div class='most_recent'>"+mostrecent+"</div></td><td class='butColumn'>"+btn+btn2+"</td></tr>";
+						$("#links tbody").append(row);
+						makeShowLinks();
+						checkStatus();
+						makeHideLinks();
+					});
+				}
+				
+				
+				
+		}
+		
+		function makeHideLinks(){
+			$(".hideBtn").click(function(){
+				$(".empt").empty();
+				$(this).hide();
+				$(this).prev().show();
+			})
+		}
+		function makeShowLinks(){
+			$(".showDetails").click(function(event){
+						event.preventDefault();
+						
+						
+						$(this).hide();
+						$(this).next().show();
+						
+						$(".empt").empty();
+						if (typeof serverUrl !== 'undefined') {
+						var data = "http://localhost/view/request.php?url="+$(this).attr("href")+"&callback=?";
+						$.getJSON(data,function(d){
+							var d = d.html;
+							$(".empt").append(d);
+							$(".empt table").addClass("table table-striped table-bordered");
+						});
+						}else{
+							var data = $(this).attr("href");
+							$.get(data,function(d){
+							$(".empt").append(d);
+							$(".empt table").addClass("table table-striped table-bordered");
+						});
+						}
+					});
+		}
+		
+		function checkStatus(){
+			
+			$("span").each(function(index) {
+				if($(this).hasClass("status-err")){
+					$(this).parent().addClass("btn btn-danger")
+				}
+				if($(this).hasClass("status-ok")){
+					$(this).parent().addClass("btn btn-success")
+				}
+				if($(this).hasClass("status-warn")){
+					$(this).parent().addClass("btn btn-warning")
+				}
+					if($(this).hasClass("status-pending")){
+					$(this).parent().addClass("btn")
+				}
+
+		});
+		}
+			
+		</script>
+	</body>
+</html>

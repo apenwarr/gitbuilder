@@ -1,0 +1,21 @@
+*{
+	margin:0;
+	padding:0;
+}
+
+.normalLink{
+	margin-right:5px;
+}
+
+.hideBtn{
+	display:none;
+}
+
+.butColumn{
+	margin-left:auto;
+	margin-right:0;
+}
+
+.most_recent{
+	float:left;
+}
