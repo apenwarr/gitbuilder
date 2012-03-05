@@ -11,11 +11,9 @@ $(document).ready(function(){
 });
 	
 	
-function summarizeUrls(url, i){
-	var link = url;
-	
+function summarizeUrls(link, i){
 	if (typeof serverUrl !== 'undefined') {
-		$.getJSON(serverUrl + "?url=" + url + "&callback=?", function(d){
+		$.getJSON(serverUrl + "?url=" + link + "&callback=?", function(d){
 			var d = d.html;
 			summaryRow(link, d);
 			checkStatus();
@@ -38,7 +36,7 @@ function summaryRow(link, d) {
 	var url = "<a class='normalLink' href='" + link + "'>" + link + "</a>";
 	var btn = "<a title='Show it here' href='" + link + "' class='btn showDetails'>Show</a>";
 	var btn2 = "<a title='hide it' href='#' class='btn hideBtn'>Hide</a>";
-	var row = '<tr><td>' + url + "</td><td><div class='most_recent'>" + mostrecent + "</div></td><td class='butColumn'>" + btn + btn2 + "</td></tr>";
+	var row = "<tr><td>" + url + "</td><td><div class='most_recent'>" + mostrecent + "</div></td><td class='butColumn'>" + btn + btn2 + "</td></tr>";
 	$("#links tbody").append(row);
 }
 
