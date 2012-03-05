@@ -21,7 +21,7 @@ function summarizeUrls(link, i){
 			makeHideLinks();
 		});
 	} else {
-		$.get(url,function(d){
+		$.get(link,function(d){
 			summaryRow(link, d);
 			checkStatus();
 			makeShowLinks(link);
