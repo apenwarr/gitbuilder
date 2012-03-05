@@ -26,20 +26,22 @@ div.logo a {
 div.extraspace {
         padding-bottom: 75%;
 }
-
-.most_recent, #most_recent {
+.most_recent li{
+	list-style-type: none;
+}
+#most_recent {
         overflow: hidden;
         font-size: 10pt;
         white-space: nowrap;
 }
-.most_recent ul,#most_recent ul {
+#most_recent ul {
         display: inline;
         margin: 0px;
         padding-left: 1em;
         font-size: 10pt;
         list-style-type: none;
 }
-.most_recent ul li, #most_recent ul li {
+#most_recent ul li {
         display: inline;
         margin-right: 0.5em;
 }
