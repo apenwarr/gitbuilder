@@ -19,3 +19,8 @@
 .most_recent{
 	float:left;
 }
+
+.most_recent li{
+	float:left;
+	margin:5px;
+}
