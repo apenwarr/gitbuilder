@@ -61,7 +61,7 @@
 				var link = url;
 				
 				if (typeof serverUrl !== 'undefined') {
-					$.getJSON(serverUrl+"?url="+url+"&callback=?",function(d){
+					$.getJSON(serverUrl + "?url=" + url + "&callback=?", function(d){
 						var d = d.html;
 						var mostrecent = $(d).filter("#most_recent").html().replace("Most Recent:","").replace(/<a href="#/g,'<a href="'+link+'#');
 	
@@ -77,7 +77,6 @@
 				}else{
 					console.log(url);
 					$.get(url,function(d){
-						
 						var mostrecent = $(d).filter("#most_recent").html().replace("Most Recent:","").replace(/<a href="#/g,'<a href="'+link+'#');
 						
 						var url = "<a class='normalLink' href='"+link+"'>"+link+"</a>";
@@ -102,31 +101,33 @@
 				$(this).prev().show();
 			})
 		}
+
+
 		function makeShowLinks(){
 			$(".showDetails").click(function(event){
 						event.preventDefault();
-						
 						
 						$(this).hide();
 						$(this).next().show();
 						
 						$(".empt").empty();
 						if (typeof serverUrl !== 'undefined') {
-						var data = "http://localhost/view/request.php?url="+$(this).attr("href")+"&callback=?";
-						$.getJSON(data,function(d){
-							var d = d.html;
-							$(".empt").append(d);
-							$(".empt table").addClass("table table-striped table-bordered");
-						});
+							var data = serverUrl + "?url=" + $(this).attr("href") + "&callback=?";
+							$.getJSON(data,function(d){
+								var d = d.html;
+								$(".empt").append(d);
+								$(".empt table").addClass("table table-striped table-bordered");
+							});
 						}else{
 							var data = $(this).attr("href");
 							$.get(data,function(d){
-							$(".empt").append(d);
-							$(".empt table").addClass("table table-striped table-bordered");
-						});
+								$(".empt").append(d);
+								$(".empt table").addClass("table table-striped table-bordered");
+							});
 						}
 					});
 		}
+
 		
 		function checkStatus(){
 			
