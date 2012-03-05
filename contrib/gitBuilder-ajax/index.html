@@ -46,12 +46,13 @@
 		</footer>
 		</div>
 		<script>
+			$.ajaxSetup({
+				async: false,
+				});
 			$(document).ready(function(){
-				
 				var length = urls.length
 				for(var i =0;i<length;i++){
 					summarizeUrls(urls[i],i);
-					
 				}			
 			});
 			

@@ -10,8 +10,7 @@
         'http://lonsdale.tchpc.tcd.ie/~jtang/cports-R-lonsdale-rhel-5.x86_64/',
         'http://lonsdale.tchpc.tcd.ie/~jtang/neural-chuck-rhel-5.x86_64/',
         'http://lonsdale.tchpc.tcd.ie/~jtang/neural-lonsdale-rhel-5.x86_64/',
-	'http://lonsdale.tchpc.tcd.ie/~jtang/neural-x00-i686-apple-darwin10.8.0/'
-				);
-				
-//serverUrl = "http://localhost/view/request.php";
+	'http://lonsdale.tchpc.tcd.ie/~jtang/neural-x00-i686-apple-darwin10.8.0/',
+	'http://cports-devel.tchpc.tcd.ie/~jtang/cports/');
 
+//serverUrl = "http://localhost/view/request.php";
