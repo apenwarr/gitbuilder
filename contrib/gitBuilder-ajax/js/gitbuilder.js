@@ -38,16 +38,16 @@ function summaryRow(link, d) {
 function checkStatus(){
 	$("span").each(function(index) {
 		if($(this).hasClass("status-err")){
-			$(this).parent().addClass("btn btn-danger")
+			$(this).parent().addClass("btn btn-danger btn-mini")
 		}
 		if($(this).hasClass("status-ok")){
-			$(this).parent().addClass("btn btn-success")
+			$(this).parent().addClass("btn btn-success btn-mini")
 		}
 		if($(this).hasClass("status-warn")){
-			$(this).parent().addClass("btn btn-warning")
+			$(this).parent().addClass("btn btn-warning btn-mini")
 		}
 			if($(this).hasClass("status-pending")){
-			$(this).parent().addClass("btn")
+			$(this).parent().addClass("btn btn-mini")
 		}
 	});
 }
