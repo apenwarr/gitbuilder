@@ -1,5 +1,7 @@
 body {
-	font-family: "Andale Mono", "Courier New", monospace;
+        margin: 0.5em;
+        padding: 0em;
+        border: 1px solid white;
 }
 
 h1 {

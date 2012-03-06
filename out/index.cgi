@@ -93,7 +93,11 @@ if ($project_name) {
 print header(-type => 'text/html; charset=utf-8'),
       start_html(
 	-title => $title,
-	-style => {-src => "index.css"}
+	-style => [
+			{-src => "bootstrap.css"},
+			{-src => "bootstrap-responsive.css"},
+			{-src => "docs.css"},
+			{-src => "index.css"},],
 );
 
 print Link({-rel=>"alternate", -title=>$title,
@@ -169,7 +173,7 @@ for my $bpb (sort { branch_age($a) <=> branch_age($b) } @branchlist) {
 print end_ul, end_div;
 
 
-print start_table({class=>"results",align=>"center"});
+print start_table({class=>"table-bordered results",align=>"center"});
 print Tr({class=>"resultheader"},
     th({style=>'text-align: right'}, "Branch"),
     th("Status"), th("Commit"), th("Who"), th("Result"), th(""));
