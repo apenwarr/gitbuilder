@@ -172,7 +172,7 @@ print end_ul, end_div;
 print start_table({class=>"results",align=>"center"});
 print Tr({class=>"resultheader"},
     th({style=>'text-align: right'}, "Branch"),
-    th("Status"), th("Commit"), th("Who"), th("Result"), th(""));
+    th("Status"), th("Commit"), th("Who"), th("Result"));
     
 sub spacer()
 {
