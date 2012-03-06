@@ -3,6 +3,10 @@
 This is a nicer and more cleaned up version of the gitbuilder.cgi script
 http://tracker.newdream.net/issues/1655.
 
+To use, copy the _js/url.js.in_ script to _js/urls.js_ customise this
+script with your own urls. The serverUrl should point to a server side
+script which acts as a proxy for the javascript.
+
 ## Issues
 
 * There are some minor issues with ordering of the table, turn on async:
