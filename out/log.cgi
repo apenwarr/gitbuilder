@@ -11,7 +11,11 @@ $commit =~ s/^\./_/;
 print header(-type => 'text/html; charset=utf-8'),
       start_html(
 	-title => "$commit - Autobuilder log",
-	-style => {-src => "log.css"}
+	-style => [
+		{-src => "bootstrap.css"},
+		{-src => "bootstrap-responsive.css"},
+		{-src => "docs.css"},
+		{-src => "log.css"},],
 );
 
 print div({-style=>'float: right'}, a({-href=>"."}, "<< index"));
