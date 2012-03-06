@@ -22,6 +22,9 @@ print div({-style=>'float: right'}, a({-href=>"."}, "<< index"));
 my $name = git_describe($commit);
 my $commitlink = commitlink($commit, $commit);
 print h1("Autobuilder log for <b><u>$name</u></b> ($commitlink):");
+if ( (-e "errcache/$commit") && (not -z "errcache/$commit") ){
+	print div({-style=>'float: right'}, a({-href=>"errcache/$commit"}, "<< errcache"));
+}
 
 my $fn;
 if (-f "pass/$commit") {
