@@ -13,4 +13,5 @@ ordering.
 
 * Cross-domain scripting issues. If all the data files are stored on
 the one machine there is no problem. If the urls.js script has a number
-of different domains then a proxy is needed.
+of different domains then a proxy is needed. The supplied request.php
+file is a very simplistic implementation that does no checking at all.
