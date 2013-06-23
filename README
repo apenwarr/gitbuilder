@@ -167,7 +167,9 @@ gitbuilder works.  Here we go:
 	  See build.sh.example.
 
 	branches.sh: get a list of interesting branches in the build/
-	  directory.
+	  directory.  If the file "branches.txt" exists in the "gitbuilder"
+	  directory, it uses the branches listed there (one per line), instead
+	  of building all of the branches. 
 	  
 	revlist.sh: given a branch name, gets a list of all the revisions
 	  starting from that branch's HEAD and stopping at the first
