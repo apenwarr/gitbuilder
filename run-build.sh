@@ -25,13 +25,10 @@ _run()
 	cd build || return 10
 
 	log "Switching git branch..."
-	git checkout .  # in case there were modified files
-	git checkout "$commit" &&
-	git reset --hard $commit || 
-	git reset --hard $commit || return 20
+	git checkout --detach &&
+	git reset --hard "$commit" 2>&1 | grep -v 'warning:' || return 20
 	
 	log "Cleaning..."
-	git clean -q -f -x -d || 
 	git clean -q -f -x -d || return 30
 	
 	log "Building..."
