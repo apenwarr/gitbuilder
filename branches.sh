@@ -15,13 +15,15 @@ fi
 git show-ref -d |
 	grep -v ' refs/heads/' |
 	grep -v '/HEAD$' |
+	grep -v '\.trac$' |
+	grep -v ' refs/stash$' |
 	sed -e 's, [^/]*/[^/]*/, ,' -e 's,\^{},,' |
 	tac |
 	while read commit branch; do
 		pb="$lb"
 		lb="$branch"
 		if [ -e ../out/ignore/$commit -o "$pb" = "$branch" ]; then
-			continue;
+			continue
 		fi
 		[ -n "$VERBOSE" ] && echo -n "$commit "
 		echo "$branch"
