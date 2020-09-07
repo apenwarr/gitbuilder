@@ -24,6 +24,18 @@ _run()
 	
 	cd build || return 10
 
+	log "Removing submodules..."
+	git submodule foreach git clean -q -f -x -d &&
+	git submodule deinit --all --force &&
+	git ls-files --others | (
+		# 'git clean' refuses to delete sub-repositories (anything containing
+		# a .git dir) and there's no way to change its mind, so we occasionally
+		# have to do it the hard way.
+		while read -r name; do
+			rm -rf "./$name"
+		done
+	) || return 15
+
 	log "Switching git branch..."
 	git checkout --detach &&
 	git reset --hard "$commit" 2>&1 | grep -v 'warning:' || return 20
