@@ -93,7 +93,7 @@ if ($project_name) {
 print header(-type => 'text/html; charset=utf-8'),
       start_html(
 	-title => $title,
-	-style => {-src => "index.css"}
+	-style => {-src => "/index.css"}
 );
 
 print Link({-rel=>"alternate", -title=>$title,
@@ -105,7 +105,7 @@ print div({-class=>"logo"}, "compiled by ",
 
 print h1($title,
     a({-href=>"rss.cgi",-title=>"Subscribe via RSS"},
-      img({-src=>"feed-icon-28x28.png",-alt=>"[RSS]"})),
+      img({-src=>"/feed-icon-28x28.png",-alt=>"[RSS]"})),
 );
 
 my @branchlist = list_branches();

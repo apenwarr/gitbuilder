@@ -12,4 +12,4 @@ unlink("pass/$commit");
 unlink("fail/$commit");
 unlink("errcache/$commit");
 
-print redirect(-location=>".");
+print redirect(-location=>"index.cgi");
