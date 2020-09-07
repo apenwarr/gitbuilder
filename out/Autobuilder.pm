@@ -228,7 +228,7 @@ sub git_describe($)
     my $commit = shift;
     if (-d '../build/.') {
 	return stripwhite(
-	    `cd ../build && git-describe --contains --all $commit`);
+	    `cd ../build && git describe --contains --all $commit`);
     } else {
 	return stripwhite(catfile("describe/$commit"));
     }
