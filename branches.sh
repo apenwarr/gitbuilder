@@ -2,7 +2,7 @@
 DIR=$(dirname $0)
 cd "$DIR/build"
 
-if [ -x ../branches-local ]; then
+if [ -e ../branches-local ]; then
     exec ../branches-local "$@"
 fi
 
