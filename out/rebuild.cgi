@@ -8,10 +8,8 @@ my $commit = param('log');
 $commit =~ s/[^0-9A-Za-z]/_/g;
 $commit =~ s/^\./_/;
 
-my $fn;
-$fn = "fail/$commit";
-if (-f $fn) {
-    unlink($fn);
-}
+unlink("pass/$commit");
+unlink("fail/$commit");
+unlink("errcache/$commit");
 
 print redirect(-location=>".");
