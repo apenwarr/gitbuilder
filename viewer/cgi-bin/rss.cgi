@@ -3,7 +3,7 @@ use strict;
 use CGI qw/:standard/;
 use POSIX qw(strftime);
 
-use lib ".";
+use lib "..";
 use Autobuilder;
 
 my $url = url();
@@ -32,7 +32,7 @@ print qq{<rss version='2.0' xmlns:atom="http://www.w3.org/2005/Atom">
 		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 };
 
-my @all = (glob("pass/*"), glob("fail/*"));
+my @all = (glob("../../out/pass/*"), glob("../../out/fail/*"));
 my $i = 0;
 for my $path (sort { mtime($b) cmp mtime($a) } @all) {
     last if ++$i > 20;
@@ -43,11 +43,11 @@ for my $path (sort { mtime($b) cmp mtime($a) } @all) {
     
     my $filename;
     my $failed;
-    if (-f "pass/$commit") {
-	$filename = "pass/$commit";
+    if (-f "../../out/pass/$commit") {
+	$filename = "../../out/pass/$commit";
 	$failed = 0;
-    } elsif (-f "fail/$commit") {
-	$filename = "fail/$commit";
+    } elsif (-f "../../out/fail/$commit") {
+	$filename = "../../out/fail/$commit";
 	$failed = 1;
     } else {
 	die("No commit $commit found?!\n");

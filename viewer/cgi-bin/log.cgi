@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 use CGI::Pretty qw/:standard *table start_ul end_ul start_li end_li/;
-use lib ".";
+use lib "..";
 use Autobuilder;
 
 my $commit = param('log');
@@ -20,10 +20,10 @@ my $commitlink = commitlink($commit, $commit);
 print h1("Autobuilder log for <b><u>$name</u></b> ($commitlink):");
 
 my $fn;
-if (-f "pass/$commit") {
-    $fn = "pass/$commit";
-} elsif (-f "fail/$commit") {
-    $fn = "fail/$commit";
+if (-f "../../out/pass/$commit") {
+    $fn = "../../out/pass/$commit";
+} elsif (-f "../../out/fail/$commit") {
+    $fn = "../../out/fail/$commit";
 } else {
     print h2("No log with that id.");
     exit 1;

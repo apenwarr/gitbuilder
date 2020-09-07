@@ -23,6 +23,8 @@ sub project_name()
     return _cat_line('project-name');
 }
 
+my $outdir = '../../out';
+
 my $gitweb_url;
 sub gitweb_url()
 {
@@ -63,7 +65,7 @@ sub _find_errors($$)
     my $ignore_warnings = 0;
     my @tail = ();
     
-    if (-e "fail/$rev") {
+    if (-e "$outdir/fail/$rev") {
 	$overallfail = 1;
     }
 	
@@ -146,21 +148,21 @@ sub find_errors($)
     my $rev = shift;
     my $fn;
     
-    if (-e "pass/$rev") {
-	$fn = "pass/$rev";
-    } elsif (-e "fail/$rev") {
-	$fn = "fail/$rev";
+    if (-e "$outdir/pass/$rev") {
+	$fn = "$outdir/pass/$rev";
+    } elsif (-e "$outdir/fail/$rev") {
+	$fn = "$outdir/fail/$rev";
     } else {
 	return undef, undef;
     }
     
-    if (-r "errcache/$rev" && age("errcache/$rev") < age($fn)) {
-	return _find_errors($rev, "errcache/$rev");
+    if (-r "$outdir/errcache/$rev" && age("$outdir/errcache/$rev") < age($fn)) {
+	return _find_errors($rev, "$outdir/errcache/$rev");
     } else {
 	my ($warnmsg, $errs) = _find_errors($rev, $fn);
 	if (defined($warnmsg)) {
 	    mkdir "errcache";
-	    open my $outf, ">errcache/$rev";
+	    open my $outf, ">$outdir/errcache/$rev";
 	    print $outf $errs;
 	    close $outf;
 	}
@@ -226,11 +228,11 @@ sub shorten($$@)
 sub git_describe($)
 {
     my $commit = shift;
-    if (-d '../build/.') {
+    if (-d '../../build/.') {
 	return stripwhite(
-	    `cd ../build && git describe --contains --all $commit`);
+	    `cd ../../build && git describe --contains --all $commit`);
     } else {
-	return stripwhite(catfile("describe/$commit"));
+	return stripwhite(catfile("../../out/describe/$commit"));
     }
 }
 

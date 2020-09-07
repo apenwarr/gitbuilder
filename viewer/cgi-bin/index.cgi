@@ -3,7 +3,7 @@ use strict;
 use CGI qw/:standard *table start_ul start_div end_div/;
 use POSIX qw(strftime);
 
-use lib ".";
+use lib "..";
 use Autobuilder;
 
 my @branches = ();
@@ -11,7 +11,7 @@ my %revs = ();
 
 sub load_revcache()
 {
-    open my $fh, "<revcache" 
+    open my $fh, "<../../out/revcache"
         or return; # try to survive without it, then
     my $branch;
     my @list;
@@ -53,8 +53,8 @@ sub run_cmd(@)
 sub revs_for_branch($)
 {
     my $branch = shift;
-    if (-x '../revlist.sh') {
-	return run_cmd("../revlist.sh", $branch);
+    if (-x '../../revlist.sh') {
+	return run_cmd("../../revlist.sh", $branch);
     } else {
 	return split("\n", $revs{$branch});
     }
@@ -62,8 +62,8 @@ sub revs_for_branch($)
 
 sub _list_branches()
 {
-    if (-x '../branches.sh') {
-	return run_cmd("../branches.sh", "-v");
+    if (-x '../../branches.sh') {
+	return run_cmd("../../branches.sh", "-v");
     } else {
 	return @branches;
     }
@@ -113,10 +113,10 @@ my @branchlist = list_branches();
 sub branch_age($)
 {
     my ($branchword, $branch, $topcommit) = split(" ", shift, 3);
-    if (-f "fail/$topcommit") {
-        return -M "fail/$topcommit";
-    } elsif (-f "pass/$topcommit") {
-        return -M "pass/$topcommit";
+    if (-f "../../out/fail/$topcommit") {
+        return -M "../../out/fail/$topcommit";
+    } elsif (-f "../../out/pass/$topcommit") {
+        return -M "../../out/pass/$topcommit";
     } else {
         return -1;
     }
@@ -234,17 +234,17 @@ for my $bpb (sort { lc($a) cmp lc($b) } @branchlist) {
                           span({class=>"codestr"},
                             $logcgi ? a({-href=>$logcgi}, $codestr) : $codestr),
                           span({class=>"comment"}, $comment,
-                            ("$statcode" eq "err" || "$statcode" eq "warn") ? "(" .
+                            ("$statcode" eq "err" || "$statcode" eq "warn") ? "(" . 
                               a({-href=>$rebuildcgi}, "Force Rebuild") . ")" : "")
                         ))
                     );
             $branchprint = "";
         }
         
-	if (-f "pass/$commit") {
+	if (-f "../../out/pass/$commit") {
 	    $failed = 0;
 	    # fall through
-	} elsif (-f "fail/$commit") {
+	} elsif (-f "../../out/fail/$commit") {
 	    $failed = 1;
 	    # fall through
 	} elsif ($commit eq $currently_doing) {

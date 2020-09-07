@@ -5,12 +5,14 @@ if [ -z "$1" ]; then
 fi
 chmod a+rX -R out 2>/dev/null
 
+echo "Generating branch list..." >&2
 rm -f out/revcache
 ./branches.sh -v | while read commit branch junk; do
 	echo ":$commit $branch"
 	./revlist.sh $branch
 done >out/revcache
 
+echo "Describing..." >&2
 mkdir -p out/describe
 (
 	cd build
@@ -19,5 +21,8 @@ mkdir -p out/describe
 		git describe --all --contains --always $b >../out/describe/$b
 	done
 )
-exec rsync -za --no-owner out/. "$1" \
-	--exclude '*~'
+
+echo "Rsyncing..." >&2
+exec rsync -zvaP --no-owner --exclude '*~' \
+	out viewer \
+	"$1"
