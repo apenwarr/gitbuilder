@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
-use CGI::Pretty qw/:standard/;
+use CGI qw/:standard/;
 use lib "..";
 use Autobuilder;
 

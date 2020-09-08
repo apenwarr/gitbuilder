@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
-use CGI::Pretty qw/:standard *table start_ul end_ul start_li end_li/;
+use CGI qw/:standard *table start_ul end_ul start_li end_li/;
 use lib "..";
 use Autobuilder;
 
