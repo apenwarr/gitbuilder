@@ -10,11 +10,12 @@ h1 {
 }
 
 .debug, .warning, .error, .fatal {
-	white-space: nowrap;
+	white-space: pre;
+	font-family: monospace;
 }
 
 .warning ul, .error ul, .fatal ul {
-	white-space: normal;
+	white-space: pre;
 	font-weight: bold;
 }
 
@@ -31,9 +32,8 @@ h1 {
 	font-weight: bold;
 }
 
-div.msbuild {
-	white-space: nowrap;
-	/* font-style: italic; */
+.msbuild {
+	white-space: pre;
+	font-family: monospace;
 	font-weight: bold;
 }
-
