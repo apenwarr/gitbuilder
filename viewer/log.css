@@ -24,7 +24,7 @@ h1 {
 }
 
 .error, .fatal {
-	background: #ff8888;
+	background: #ffdddd;
 }
 
 .buildscript {
