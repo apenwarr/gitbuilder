@@ -85,9 +85,25 @@ while (defined(my $s = <$fh>))
         if ($ignore_warnings <= 0 || $xclass !~ /(hint|warning)/i) {
             $class = $xclass;
         }
-    } elsif ($s =~ /^\s*(make: \*\*\* .*)/) {
+    } elsif ($s =~ /^(\s*.*\.go:\d+:\d+: .*)/i) {
+        # errors from go compiler
         $class = "error";
         $s = ul($1);
+    } elsif ($s =~ /^(FAIL(\t.*\d+s|$))/) {
+        # errors from go tests
+        $class = "error";
+        $s = ul($1);
+    } elsif ($s =~ /^\s*(make: \*\*\* .*)/) {
+        # errors from GNU make
+        $class = "error";
+        $s = ul($1);
+    } elsif ($s =~ /^(redo  \s*\S.* \(exit .*)/) {
+        # errors from redo build system
+        $class = "error";
+        $s = ul($1);
+    } elsif ($s =~ /^(redo  \s*\S.*)/) {
+        $class = "redo";
+        $s = $1;
     } elsif ($s =~ /^!\s*(.*?)\s+(\S+)\s*$/) {
         $class = ($2 ne "ok") ? 'error' : 'buildscript';
     }
@@ -96,4 +112,3 @@ while (defined(my $s = <$fh>))
 }
 
 close $fh;
-
