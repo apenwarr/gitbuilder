@@ -20,7 +20,7 @@ sub _cat_line($)
 
 sub project_name()
 {
-    return _cat_line('project-name');
+    return _cat_line('../../project-name');
 }
 
 my $outdir = '../../out';
@@ -30,14 +30,14 @@ sub gitweb_url()
 {
     return $gitweb_url;
 }
-$gitweb_url = _cat_line('gitweb-url');
+$gitweb_url = _cat_line('../../gitweb-url');
 
 my $autobuilder_url;
 sub autobuilder_url()
 {
     return $autobuilder_url;
 }
-$autobuilder_url = _cat_line('autobuilder-url')
+$autobuilder_url = _cat_line('../../autobuilder-url')
     and $autobuilder_url =~ s{/$}{};
 
 sub commitlink($$)
