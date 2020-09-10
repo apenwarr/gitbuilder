@@ -26,7 +26,7 @@ async def run_cgi(self, args, env=None):
             genv = None
         p = await asyncio.create_subprocess_exec(
             *args,
-            cwd='viewer/cgi-bin/',
+            cwd='viewer/',
             env=genv,
             stdout=asyncio.subprocess.PIPE,
         )
@@ -53,11 +53,10 @@ class IndexHandler(tornado.web.RequestHandler):
 
 
 class LogsHandler(tornado.web.RequestHandler):
-    async def get(self):
-        commitid = self.get_argument('log')
+    async def get(self, logid):
         await run_cgi(self, ['./log.cgi'], env={
             'REQUEST_METHOD': 'GET',
-            'QUERY_STRING': 'log=%s' % commitid,
+            'QUERY_STRING': 'log=%s' % logid,
         })
 
 
@@ -77,13 +76,12 @@ def main():
         'template_whitespace': 'all'
     }
 
-    STATICDIR = os.path.join(os.path.dirname(__file__), 'viewer')
+    STATICDIR = os.path.join(os.path.dirname(__file__), 'viewer/static')
 
     app = tornado.web.Application([
         (r'/', IndexHandler),
-        (r'/index.cgi', IndexHandler),
-        (r'/log.cgi', LogsHandler),
-        (r'/rss.cgi', RssHandler),
+        (r'/log/([0-9a-f]+)$', LogsHandler),
+        (r'/rss', RssHandler),
         (r'/(.*)', tornado.web.StaticFileHandler, dict(path=STATICDIR)),
     ], **settings)
 
