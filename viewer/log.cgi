@@ -21,7 +21,8 @@ print header(-type => 'text/html; charset=utf-8'),
 print div({-style=>'float: right'}, a({-href=>"."}, "<< index"));
 my $name = git_describe($commit);
 my $commitlink = commitlink($commit, $commit);
-print h1("Autobuilder log for <b><u>$name</u></b> ($commitlink):");
+print h1("Autobuilder log for <b><u>$name</u></b><br>($commitlink):");
+print "(", a({-href=>"/rebuild/$commitlink"}, "Force Rebuild"), ")";
 
 my $fn;
 if (-f "../out/pass/$commit") {
