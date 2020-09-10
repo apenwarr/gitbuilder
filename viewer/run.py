@@ -26,7 +26,6 @@ async def run_cgi(self, args, env=None):
             genv = None
         p = await asyncio.create_subprocess_exec(
             *args,
-            cwd='viewer/',
             env=genv,
             stdout=asyncio.subprocess.PIPE,
         )
@@ -75,13 +74,13 @@ def unlink(name):
 
 class RebuildHandler(tornado.web.RequestHandler):
     def get(self, logid):
-        self.render('viewer/rebuild.tmpl.html', logid=logid)
+        self.render('rebuild.tmpl.html', logid=logid)
 
     def post(self, logid):
         assert re.match(r'^[0-9a-f]+$', logid)
-        unlink(os.path.join('out/pass', logid))
-        unlink(os.path.join('out/fail', logid))
-        unlink(os.path.join('out/errcache', logid))
+        unlink(os.path.join('../out/pass', logid))
+        unlink(os.path.join('../out/fail', logid))
+        unlink(os.path.join('../out/errcache', logid))
         self.redirect('/')
 
 def main():
@@ -94,7 +93,7 @@ def main():
         'template_whitespace': 'all'
     }
 
-    STATICDIR = os.path.join(os.path.dirname(__file__), 'viewer/static')
+    STATICDIR = os.path.join(os.path.dirname(__file__), 'static')
 
     app = tornado.web.Application([
         (r'/', IndexHandler),
