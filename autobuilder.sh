@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 DIR="$(dirname $0)"
 cd "$DIR"
 
@@ -30,30 +31,44 @@ fi
 mkdir -p out/pass out/fail out/ignore out/errcache
 chmod a+w out/errcache
 
+build() {
+	local ref="$1"
+
+	if [ -z "$ref" ]; then
+		echo "$branch: already up to date."
+		return
+	fi
+	if [ -e "out/pass/$ref" -o -e "out/fail/$ref" ]; then
+		return
+	fi
+	did_something=1
+	echo "Building $branch: $ref"
+	set -m
+	./runtee out/log ./run-build.sh $ref || true &
+	XPID=$!
+	trap "echo 'Killing (SIGINT)';  kill -TERM -$XPID; exit 1" SIGINT
+	trap "echo 'Killing (SIGTERM)'; kill -TERM -$XPID; exit 1" SIGTERM
+	wait; wait
+}
+
 did_something=1
 while [ -n "$did_something" ]; do
 	( cd build && 
 	  git remote show | ../maxtime 60 xargs git remote prune &&
 	  ../maxtime 60 git remote update )
 	did_something=
-	for branch in $(./branches.sh); do
-		ref=$(./next-rev.sh $branch)
-		if [ -z "$ref" ]; then
-			echo "$branch: already up to date."
-			continue;
-		fi
-		if [ -e "out/pass/$ref" -o -e "out/fail/$ref" ]; then
-			echo "$branch: weird, already built $ref!"
-			continue
-		fi
-		did_something=1
-		echo "Building $branch: $ref"
-		set -m
-		./runtee out/log ./run-build.sh $ref &
-		XPID=$!
-		trap "echo 'Killing (SIGINT)';  kill -TERM -$XPID; exit 1" SIGINT
-		trap "echo 'Killing (SIGTERM)'; kill -TERM -$XPID; exit 1" SIGTERM
-		wait; wait
+
+	# Build top of every branch first of all
+	branches=$(./branches.sh)
+	for branch in $branches; do
+		xref=$(cd build && git rev-parse "$branch~0")
+		build "$xref"
+	done
+
+	# Only then do we try bisecting other branches
+	for branch in $branches; do
+		xref=$(./next-rev.sh $branch)
+		build "$xref"
 	done
 	
 	sleep 5

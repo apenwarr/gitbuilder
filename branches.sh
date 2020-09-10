@@ -12,7 +12,10 @@ else
 	VERBOSE=
 fi
 
-git show-ref -d |
+refs=$(git show-ref -d)
+
+(echo "$refs" | grep -E 'main|master';  # build main and master first
+ echo "$refs" | grep -vE 'main|master') |
 	grep -v ' refs/heads/' |
 	grep -v '/HEAD$' |
 	grep -v '\.trac$' |
