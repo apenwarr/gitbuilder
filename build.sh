@@ -20,6 +20,11 @@ else
 	REDO=redo
 fi
 
+# temporary? Add a go compiler to our PATH in case the build script doesn't
+# extract one like it should.
+# TODO(apenwarr): Maybe make this only apply for older commits?
+export PATH=$PATH:$HOME/.cache/tailscale-go/bin
+
 git checkout origin/main -- git-fix-modules.sh git-stash-all.sh
 ./git-fix-modules.sh 2>fix-modules.err || true
 if [ -x "git-stash-all.sh" ]; then
@@ -32,7 +37,7 @@ if [ -e "native.do" ]; then
 	if [ -e "allconfig.do" ]; then
 		$REDO -j10 allconfig
 	fi
-	$REDO native
+	../maxtime 1800 $REDO native
 else
 	echo "No interesting .do files, skipping." >&2
 fi
