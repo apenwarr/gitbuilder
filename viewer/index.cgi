@@ -238,8 +238,8 @@ for my $bpb (sort { lc($a) cmp lc($b) } @branchlist) {
                           span({class=>"codestr"},
                             $logcgi ? a({-href=>$logcgi}, $codestr) : $codestr),
                           span({class=>"comment"}, $comment,
-                            ("$statcode" eq "err" || "$statcode" eq "warn") ? "(" . 
-                              a({-href=>$rebuildcgi}, "Force Rebuild") . ")" : "")
+                            ("$statcode" eq "err" || "$statcode" eq "warn") ? "(" .
+                              a({-href=>"$rebuildcgi"}, "Force Rebuild") . ")" : "")
                         ))
                     );
             $branchprint = "";

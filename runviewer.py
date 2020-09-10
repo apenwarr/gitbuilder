@@ -52,6 +52,12 @@ class IndexHandler(tornado.web.RequestHandler):
         await run_cgi(self, ['./index.cgi'])
 
 
+class RssHandler(tornado.web.RequestHandler):
+    async def get(self):
+        self.set_header('Content-type', 'text/xml')
+        await run_cgi(self, ['./rss.cgi'])
+
+
 class LogsHandler(tornado.web.RequestHandler):
     async def get(self, logid):
         await run_cgi(self, ['./log.cgi'], env={
@@ -60,11 +66,23 @@ class LogsHandler(tornado.web.RequestHandler):
         })
 
 
-class RssHandler(tornado.web.RequestHandler):
-    async def get(self):
-        self.set_header('Content-type', 'text/xml')
-        await run_cgi(self, ['./rss.cgi'])
+def unlink(name):
+    try:
+        os.unlink(name)
+    except FileNotFoundError:
+        pass
 
+
+class RebuildHandler(tornado.web.RequestHandler):
+    def get(self, logid):
+        self.render('viewer/rebuild.tmpl.html', logid=logid)
+
+    def post(self, logid):
+        assert re.match(r'^[0-9a-f]+$', logid)
+        unlink(os.path.join('out/pass', logid))
+        unlink(os.path.join('out/fail', logid))
+        unlink(os.path.join('out/errcache', logid))
+        self.redirect('/')
 
 def main():
     debug = True if os.getenv('DEBUG') else False
@@ -80,8 +98,9 @@ def main():
 
     app = tornado.web.Application([
         (r'/', IndexHandler),
-        (r'/log/([0-9a-f]+)$', LogsHandler),
         (r'/rss', RssHandler),
+        (r'/log/([0-9a-f]+)$', LogsHandler),
+        (r'/rebuild/([0-9a-f]+)$', RebuildHandler),
         (r'/(.*)', tornado.web.StaticFileHandler, dict(path=STATICDIR)),
     ], **settings)
 
