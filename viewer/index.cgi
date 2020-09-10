@@ -36,7 +36,7 @@ sub load_revcache()
 }
 load_revcache();
 
-my $currently_doing = (-f '.doing') && stripwhite(catfile(".doing")) || "";
+my $currently_doing = (-f '../out/.doing') && stripwhite(catfile("../out/.doing")) || "";
 
 sub run_cmd(@)
 {
