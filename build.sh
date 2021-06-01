@@ -33,11 +33,29 @@ fi
 
 git checkout origin/main -- go.toolchain.cmd.do check-redo-dirs.do
 
-if [ -e "native.do" ]; then
+if [ -n "$(git rev-list e2a65fda59e9056b7 ^HEAD | head -n1)" ]; then
+	# predates the commit that fixed mobileconfig keychain access.
+	# Without this, it was broken on headless macOS and tests fail,
+	# which is not that interesting.
+	rm -f mobileconfig/*_test.go
+fi
+
+if [ -e "test.do" ]; then
 	if [ -e "allconfig.do" ]; then
 		$REDO -j10 allconfig
 	fi
-	../maxtime 1800 $REDO native
+	
+	# Need to build these sequentially since xcode can't handle being
+	# executed in parallel, sigh.
+	for d in archive-macos archive-ios test-ios-size; do
+		if [ -e "xcode/$d.do" ]; then
+			../maxtime 120 $REDO xcode/$d
+		fi
+	done
+	
+	# Can't actually redo 'test' because the xcode tests require
+	# a macOS GUI to run. Hmm...
+	../maxtime 1800 $REDO -j8 qtest world
 else
 	echo "No interesting .do files, skipping." >&2
 fi
